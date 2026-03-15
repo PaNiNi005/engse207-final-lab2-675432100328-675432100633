@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔐 Task Board — Final Lab</title>
+  <style>
+    /* ── CSS จาก Week 12 ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #273448;
+      --border: #334155; --text: #e2e8f0; --muted: #94a3b8;
+      --blue: #3b82f6; --blue2: #2563eb; --green: #22c55e;
+      --yellow: #f59e0b; --red: #ef4444; --purple: #a855f7;
+      --radius: 10px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
+    button { cursor: pointer; font-family: inherit; transition: all .15s; }
+    .hidden { display: none !important; }
+
+    /* AUTH PAGE */
+    #auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; }
+    .auth-box { background: var(--surface); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 420px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+    .auth-logo { font-size: 2.5rem; text-align: center; margin-bottom: .5rem; }
+    .auth-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: .25rem; }
+    .auth-subtitle { text-align: center; color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; font-weight: 500; }
+    .form-group input { width: 100%; padding: .75rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; }
+    .btn-primary { width: 100%; padding: .85rem; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; margin-top: .5rem; }
+    .auth-msg { padding: .7rem 1rem; border-radius: 8px; margin-top: 1rem; font-size: .9rem; text-align: center; }
+    .auth-msg.error { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
+
+    /* MAIN APP LAYOUT */
+    #app-page { display: flex; height: 100vh; }
+    .sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sidebar-logo { padding: 1.25rem 1.5rem; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); }
+    .sidebar-nav { flex: 1; padding: .75rem; }
+    .nav-item { display: flex; align-items: center; gap: .75rem; padding: .65rem 1rem; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: .9rem; border: none; background: none; width: 100%; text-align: left; margin-bottom: 2px; }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(59,130,246,.15); color: var(--blue); }
+    .badge-count { margin-left: auto; background: var(--blue); color: white; font-size: .7rem; padding: 2px 7px; border-radius: 999px; }
+    
+    .main-content { flex: 1; overflow-y: auto; }
+    .page-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; background: var(--surface); }
+    .page-body { padding: 2rem; }
+
+    /* TASKS & CARDS */
+    .task-list { display: flex; flex-direction: column; gap: .75rem; }
+    .task-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+    .task-card.status-TODO { border-left-color: #64748b; }
+    .task-card.status-IN_PROGRESS { border-left-color: var(--yellow); }
+    .task-card.status-DONE { border-left-color: var(--green); }
+    
+    /* MODAL & OTHERS (เหมือนเดิม) */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { background: var(--surface); border-radius: 14px; width: 100%; max-width: 500px; padding: 1.5rem; }
+    .role-badge { font-size: .7rem; color: white; padding: 2px 6px; border-radius: 4px; background: var(--blue); }
+    .role-admin { background: var(--purple); }
+
+    /* JWT Panel */
+    .jwt-panel { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem; }
+    pre { background: #000; padding: 10px; border-radius: 5px; font-size: 0.8rem; overflow-x: auto; }
+  </style>
+</head>
+<body>
+
+<div id="auth-page">
+  <div class="auth-box">
+    <div class="auth-logo">🔐</div>
+    <div class="auth-title">Task Board</div>
+    <div class="auth-subtitle">Final Lab — Security Architecture</div>
+
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input id="login-email" type="email" value="alice@lab.local" placeholder="you@lab.local">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input id="login-password" type="password" value="alice123" placeholder="password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
+    </div>
+
+    <div id="auth-msg"></div>
+
+    <div class="auth-hint" style="margin-top:1rem;padding:.75rem;background:rgba(59,130,246,.1);border-radius:.5rem;font-size:.82rem">
+      <strong>🔑 Seed Users:</strong><br>
+      alice@lab.local / alice123 (member)<br>
+      admin@lab.local / adminpass (admin)
+    </div>
+  </div>
+</div>
+
+<div id="app-page" class="hidden">
+  <nav class="sidebar">
+    <div class="sidebar-logo">📋 Task Board</div>
+    <div class="sidebar-nav">
+      <button class="nav-item active" data-page="tasks" onclick="showPage('tasks')">
+        <span class="nav-icon">✅</span> Tasks
+        <span class="badge-count" id="task-count">0</span>
+      </button>
+      <button class="nav-item" data-page="profile" onclick="showPage('profile')">
+        <span class="nav-icon">👤</span> Profile & JWT
+      </button>
+      <a href="logs.html" target="_blank" class="nav-item" style="text-decoration:none;">
+        <span class="nav-icon">📊</span> Log Dashboard ↗
+      </a>
+    </div>
+    <div class="sidebar-footer" style="padding:1rem; border-top:1px solid var(--border)">
+      <div id="sidebar-name" style="font-weight:bold; font-size:0.9rem">User</div>
+      <button onclick="doLogout()" style="color:var(--red); background:none; border:none; font-size:0.8rem">Logout ✕</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div id="page-tasks">
+      <div class="page-header">
+        <div class="page-title">Tasks</div>
+        <button class="btn-primary" style="width:auto; padding:0.5rem 1rem" onclick="openCreateModal()">+ Add Task</button>
+      </div>
+      <div class="page-body">
+        <div id="task-list" class="task-list"></div>
+      </div>
+    </div>
+
+    <div id="page-profile" class="hidden">
+      <div class="page-header"><div class="page-title">Profile & JWT</div></div>
+      <div class="page-body">
+        <div class="jwt-panel">
+          <h3>Current User</h3>
+          <p id="prof-info">Loading...</p>
+          <hr style="margin:1rem 0; border:0; border-top:1px solid var(--border)">
+          <h3>JWT Token</h3>
+          <pre id="jwt-display" style="color:var(--yellow)"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="task-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <h3 id="modal-title" style="margin-bottom:1rem">Create Task</h3>
+    <div class="form-group">
+      <label>Title</label>
+      <input id="task-title" type="text">
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="task-status" style="width:100%; padding:0.5rem; background:var(--bg); color:white; border:1px solid var(--border)">
+        <option value="TODO">TODO</option>
+        <option value="IN_PROGRESS">IN PROGRESS</option>
+        <option value="DONE">DONE</option>
+      </select>
+    </div>
+    <div style="display:flex; gap:1rem; margin-top:1rem">
+      <button class="btn-primary" onclick="submitTask()">Save</button>
+      <button class="btn-primary" style="background:var(--surface2)" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── STATE & CONFIG ── */
+const API = 'https://localhost'; // เปลี่ยนเป็น HTTPS ตามโจทย์
+let token = localStorage.getItem('jwt_token');
+let currentUser = null;
+
+/* ── AUTH ── */
+async function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  try {
+    const res = await fetch(`${API}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      token = data.token;
+      localStorage.setItem('jwt_token', token);
+      initApp(data.user);
+    } else {
+      showAuthMsg(data.error || 'Login Failed', 'error');
+    }
+  } catch (err) {
+    showAuthMsg('Cannot connect to API (HTTPS)', 'error');
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('jwt_token');
+  location.reload();
+}
+
+function showAuthMsg(msg, type) {
+  const el = document.getElementById('auth-msg');
+  el.className = `auth-msg ${type}`;
+  el.textContent = msg;
+}
+
+/* ── APP LOGIC ── */
+function initApp(user) {
+  currentUser = user;
+  document.getElementById('auth-page').classList.add('hidden');
+  document.getElementById('app-page').classList.remove('hidden');
+  document.getElementById('sidebar-name').textContent = user.username || user.email;
+  showPage('tasks');
+}
+
+function showPage(page) {
+  document.getElementById('page-tasks').classList.toggle('hidden', page !== 'tasks');
+  document.getElementById('page-profile').classList.toggle('hidden', page !== 'profile');
+  
+  if (page === 'tasks') loadTasks();
+  if (page === 'profile') loadProfile();
+}
+
+async function loadTasks() {
+  const res = await fetch(`${API}/api/tasks`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const tasks = await res.json();
+  const list = document.getElementById('task-list');
+  document.getElementById('task-count').textContent = tasks.length;
+  
+  list.innerHTML = tasks.map(t => `
+    <div class="task-card status-${t.status}">
+      <div style="display:flex; justify-content:space-between">
+        <strong>${t.title}</strong>
+        <span class="role-badge">${t.status}</span>
+      </div>
+      <div style="font-size:0.8rem; color:var(--muted); margin-top:0.5rem">Owner: ${t.owner?.username || 'System'}</div>
+    </div>
+  `).join('');
+}
+
+function loadProfile() {
+  document.getElementById('prof-info').innerHTML = `
+    ID: ${currentUser.id}<br>
+    Email: ${currentUser.email}<br>
+    Role: <span class="role-badge ${currentUser.role==='admin'?'role-admin':''}">${currentUser.role}</span>
+  `;
+  document.getElementById('jwt-display').textContent = token;
+}
+
+/* ── TASK ACTIONS (Simplified) ── */
+function openCreateModal() { document.getElementById('task-modal').classList.remove('hidden'); }
+function closeModal() { document.getElementById('task-modal').classList.add('hidden'); }
+
+async function submitTask() {
+  const title = document.getElementById('task-title').value;
+  const status = document.getElementById('task-status').value;
+  
+  const res = await fetch(`${API}/api/tasks`, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ title, status })
+  });
+
+  if (res.ok) {
+    closeModal();
+    loadTasks();
+  }
+}
+
+/* ── AUTO-LOGIN ── */
+if (token) {
+  fetch(`${API}/api/auth/verify`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.valid) initApp(data.user);
+    else doLogout();
+  })
+  .catch(() => doLogout());
+}
+</script>
+</body>
+</html>
