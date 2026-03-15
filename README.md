@@ -249,19 +249,19 @@ curl -sk $BASE/api/tasks/ -H "Authorization: Bearer $TOKEN"
 
 ## 13. ปัญหาที่พบและแนวทางแก้ไข
 
-- การเชื่อมต่อระหว่าง Container:
+1. การเชื่อมต่อระหว่าง Container:
 - ปัญหา: Service เชื่อมต่อฐานข้อมูลและ Service อื่นไม่ได้เมื่อใช้ localhost
 - แนวทางแก้ไข: เปลี่ยนมาเรียกใช้งานผ่าน Service Name ที่กำหนดไว้ใน docker-compose.yml แทน เพื่อให้ Docker DNS จัดการเส้นทางเครือข่ายภายในได้อย่างถูกต้อง
 
-- การจัดการ JWT:
+2. การจัดการ JWT:
 - ปัญหา: เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์ (Validation Failed) ระหว่าง Service
 - แนวทางแก้ไข: ตรวจสอบความถูกต้องของ JWT_SECRET ใน Environment Variables ของทุก Service ให้ตรงกัน และปรับปรุง Middleware ใน auth-service ให้รองรับการอ่าน Token จากรูปแบบ Bearer <token> บน HTTP Header
 
-- ข้อผิดพลาด Mixed Content (HTTPS):
+3. ข้อผิดพลาด Mixed Content (HTTPS):
 - ปัญหา: เบราว์เซอร์บล็อกการเรียก API เมื่อรันบน HTTPS เนื่องจากมีการเรียกใช้ Request แบบ HTTP
 - แนวทางแก้ไข: ปรับค่า URL ของ API ใน Frontend ทั้งหมดให้เป็น https://localhost เพื่อให้ Protocol สอดคล้องกันทั้งระบบผ่าน Nginx
 
-- ประสิทธิภาพของ Log Dashboard:
+4. ประสิทธิภาพของ Log Dashboard:
 - ปัญหา: หน้าจอค้างหรือแสดงผลช้าเมื่อมีการโหลด Log จำนวนมากพร้อมกัน
 - แนวทางแก้ไข: เพิ่มฟังก์ชัน Client-side filtering เพื่อคัดกรองข้อมูลก่อนแสดงผล และใช้การจัดการ UI แบบมีเงื่อนไข (Conditional Rendering) เพื่อให้ Dashboard ทำงานได้ราบรื่นยิ่งขึ้น
 
