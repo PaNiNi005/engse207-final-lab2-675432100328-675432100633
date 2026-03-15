@@ -1,3 +1,4 @@
+// authMiddleware.js
 const { verifyToken } = require('./jwtUtils');
 
 module.exports = function requireAuth(req, res, next) {
