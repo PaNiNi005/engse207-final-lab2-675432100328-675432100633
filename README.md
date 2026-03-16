@@ -56,6 +56,7 @@
 * docker compose up --build
 
 ---
+
 6. API Summary (Updated)
    
 * Auth Service:
@@ -81,3 +82,5 @@ GET /api/users/me - ดูโปรไฟล์ของตนเอง
 PUT /api/users/me - แก้ไขโปรไฟล์
 
 GET /api/users - ดูรายชื่อผู้ใช้ทั้งหมด (Admin Only)
+
+---
