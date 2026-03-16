@@ -53,6 +53,28 @@
 * `DATABASE_URL`: (Connection String ของ Postgres)
 
 ### 5.2 รันผ่าน Docker Compose
-```bash
-docker compose up --build
+* docker compose up --build
 
+---
+6. API Summary (Updated)
+Auth Service:
+
+POST /api/auth/register - สมัครสมาชิก
+
+POST /api/auth/login - เข้าสู่ระบบ
+
+GET /api/auth/me - ตรวจสอบข้อมูลผู้ใช้จาก Token
+
+Task Service:
+
+POST /api/tasks - สร้างงาน
+
+GET /api/tasks - ดูรายการงาน
+
+User Service:
+
+GET /api/users/me - ดูโปรไฟล์ของตนเอง
+
+PUT /api/users/me - แก้ไขโปรไฟล์
+
+GET /api/users - ดูรายชื่อผู้ใช้ทั้งหมด (Admin Only)
