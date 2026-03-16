@@ -28,7 +28,6 @@
 
 ## 3. Architecture Overview (Cloud Version)
 
-[Insert Architecture Diagram Here]
 
 * **Database-per-Service:** ระบบแยกฐานข้อมูลอิสระ 3 ชุด (`auth-db`, `task-db`, `user-db`) เพื่อลดการพึ่งพากัน (Loose Coupling)
 * **Logical Reference:** ใช้ `user_id` เป็น Logical Reference อ้างอิงระหว่างฐานข้อมูล โดยยึด `users.id` จาก `auth-db` เป็นหลัก
