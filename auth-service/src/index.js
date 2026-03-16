@@ -1,3 +1,4 @@
+// src/index.js
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
@@ -26,7 +27,7 @@ async function start() {
   while (retries > 0) {
     try {
       await initDB();
-      await seedUsers();   // ← ✨ v2.0: สร้าง test users หลัง table พร้อม
+     // await seedUsers();   // ← ✨ v2.0: สร้าง test users หลัง table พร้อม
       break;
     } catch (err) {
       console.log(`[auth-service] Waiting for DB... (${retries} retries left): ${err.message}`);

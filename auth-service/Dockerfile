@@ -1,3 +1,5 @@
+
+# Dockerfile for Auth Service
 FROM node:20-alpine
 
 WORKDIR /app
@@ -8,6 +10,9 @@ RUN npm ci --omit=dev
 
 # Copy source
 COPY src/ ./src/
+
+# เพิ่มบรรทัดนี้ต่อจาก COPY src/ ./src/
+COPY init.sql ./src/db/
 
 # Non-root user (security best practice)
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
