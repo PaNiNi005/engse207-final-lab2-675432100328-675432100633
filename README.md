@@ -84,3 +84,29 @@ PUT /api/users/me - แก้ไขโปรไฟล์
 GET /api/users - ดูรายชื่อผู้ใช้ทั้งหมด (Admin Only)
 
 ---
+
+7. ปัญหาที่พบและแนวทางแก้ไข
+
+1. Database Connectivity: ปัญหาการเชื่อมต่อระหว่าง Container บน Railway
+
+* แก้ไข: ใช้การอ้างอิงผ่าน DATABASE_URL โดยตั้งค่าผ่าน Railway Variable ตามชื่อ Service ของ Database
+
+2. Profile Initialization: การสร้างโปรไฟล์อัตโนมัติเมื่อ login ครั้งแรก
+
+* แก้ไข: ปรับ Logic ใน User Service หาก GET /api/users/me แล้วไม่พบ record ให้สร้าง user_profiles เริ่มต้นโดยดึงข้อมูลจาก JWT Payload
+
+3. CORS Policy: เบราว์เซอร์บล็อกการเรียก API ข้าม Domain
+
+* แก้ไข: ตั้งค่า CORS ในระดับ Application ของทุก Service ให้รองรับ Domain ของ Frontend บน Railway
+
+---
+
+8. ภาคผนวกและเอกสารประกอบ
+
+* TEAM_SPLIT.md: รายละเอียดการแบ่งงานของสมาชิก
+
+* INDIVIDUAL_REPORT_[studentid].md: รายงานรายบุคคล
+
+* Screenshots: ดูหลักฐานการทำงานบน Cloud ได้ที่โฟลเดอร์ /screenshots
+
+---
