@@ -14,7 +14,7 @@
 * **67543210032-8** นาย ธนมินทร์ เปลี่ยนพร้อม
 * **67543210063-3** นางสาว รัฐจิกาลณ์ กวงคำ
 
-**Repository:** `https://github.com/PaNiNi005/final-lab-set2`
+**Repository:** `https://github.com/PaNiNi005/engse207-final-lab2-675432100328-675432100633/tree/main`
 
 ---
 
