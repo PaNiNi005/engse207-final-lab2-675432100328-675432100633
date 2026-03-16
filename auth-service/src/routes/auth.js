@@ -1,3 +1,4 @@
+// src/routes/auth.js
 const express  = require('express');
 const bcrypt   = require('bcryptjs');
 const { pool } = require('../db/db');
@@ -174,4 +175,30 @@ router.get('/health', (_, res) => {
   });
 });
 
+// POST /api/auth/register
+router.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      'INSERT INTO users (username, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, username, email, role',
+      [username, email.toLowerCase().trim(), hashedPassword, 'member']
+    );
+
+    res.status(201).json({
+      message: 'สมัครสมาชิกสำเร็จ',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    if (err.code === '23505') { // Duplicate key
+      return res.status(400).json({ error: 'Username หรือ Email นี้ถูกใช้งานแล้ว' });
+    }
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 module.exports = router;

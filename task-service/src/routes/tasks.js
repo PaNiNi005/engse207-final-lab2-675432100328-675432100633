@@ -1,4 +1,4 @@
-// task.js
+// src/routes/tasks.js
 const express       = require('express');
 const { pool }      = require('../db/db');
 const requireAuth   = require('../middleware/authMiddleware');
@@ -33,23 +33,23 @@ router.get('/health', (_, res) => res.json({ status:'ok', service:'task-service'
 // ทุก route ต้องผ่าน JWT middleware
 router.use(requireAuth);
 
-// GET /api/tasks/ — ดึง tasks (admin เห็นทั้งหมด, member เห็นแค่ของตัวเอง)
+// GET /api/tasks/ — ดึง tasks (ตัด JOIN users ออกเพราะอยู่คนละ Database)
 router.get('/', async (req, res) => {
   try {
     let result;
     if (req.user.role === 'admin') {
-      result = await pool.query(`
-        SELECT t.*, u.username FROM tasks t
-        JOIN users u ON t.user_id = u.id
-        ORDER BY t.created_at DESC`);
+      // ดึงทั้งหมดจากตาราง tasks ใน task-db เท่านั้น
+      result = await pool.query(`SELECT * FROM tasks ORDER BY created_at DESC`);
     } else {
-      result = await pool.query(`
-        SELECT t.*, u.username FROM tasks t
-        JOIN users u ON t.user_id = u.id
-        WHERE t.user_id = $1 ORDER BY t.created_at DESC`, [req.user.sub]);
+      // ดึงเฉพาะของตัวเอง
+      result = await pool.query(
+        `SELECT * FROM tasks WHERE user_id = $1 ORDER BY created_at DESC`, 
+        [req.user.sub]
+      );
     }
     res.json({ tasks: result.rows, count: result.rowCount });
   } catch (err) {
+    console.error('[TASK] Error:', err.message); // เพิ่ม log เพื่อดู error จริงๆ
     res.status(500).json({ error: 'Server error' });
   }
 });
