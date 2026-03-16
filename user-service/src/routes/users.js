@@ -1,95 +1,99 @@
-const express = require('express');
-const { pool } = require('../db/db');
-const { requireAuth, requireRole } = require('../middleware/authMiddleware');
+const express     = require('express');
+const { pool }    = require('../db/db');
+const requireAuth = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/jwtUtils');
 
 const router = express.Router();
 
-/**
- * [T5] GET /api/users/me — ดูโปรไฟล์ตัวเอง
- * เงื่อนไข: หากไม่พบข้อมูล profile ให้สร้างใหม่โดยใช้ข้อมูลจาก JWT ทันที
- */
-router.get('/me', requireAuth, async (req, res) => {
-  const userId = req.user.sub; // ดึง id จาก JWT payload
-
+// Helper: log ลง user-db โดยตรง
+async function logEvent({ level, event, userId, message, meta }) {
   try {
-    // 1. ตรวจสอบว่ามี profile ใน user-db หรือยัง
-    const result = await pool.query(
-      'SELECT * FROM user_profiles WHERE user_id = $1',
-      [userId]
+    await pool.query(
+      `INSERT INTO logs (level, event, user_id, message, meta) VALUES ($1,$2,$3,$4,$5)`,
+      [level, event, userId || null, message || null, meta ? JSON.stringify(meta) : null]
     );
-
-    // 2. ถ้าไม่พบ (เป็นผู้ใช้ใหม่ที่เพิ่ง register/login มาครั้งแรก)
-    if (result.rows.length === 0) {
-      const newProfile = await pool.query(
-        `INSERT INTO user_profiles (user_id, username, email, role, display_name) 
-         VALUES ($1, $2, $3, $4, $5) 
-         RETURNING *`,
-        [
-          userId,
-          req.user.username,
-          req.user.email,
-          req.user.role || 'member',
-          req.user.username // ตั้งชื่อแสดงผลเริ่มต้นให้เท่ากับ username
-        ]
-      );
-      return res.status(201).json({ 
-        message: 'Initial profile created automatically', 
-        user: newProfile.rows[0] 
-      });
-    }
-
-    // 3. ถ้าพบข้อมูลอยู่แล้ว ส่งกลับปกติ
-    res.json({ user: result.rows[0] });
-  } catch (err) {
-    console.error('[USER] /me error:', err.message);
-    res.status(500).json({ error: 'Server error' });
+  } catch (e) {
+    console.error('[user-log]', e.message);
   }
-});
+}
 
-/**
- * [T6] PUT /api/users/me — แก้ไขโปรไฟล์ตัวเอง
- */
-router.put('/me', requireAuth, async (req, res) => {
-  const userId = req.user.sub;
-  const { display_name, bio, avatar_url } = req.body; // รับข้อมูลที่ต้องการแก้ไข
+// ── Helper: auto-create profile ถ้ายังไม่มี ──────────────────────────
+async function ensureProfile(user) {
+  const existing = await pool.query(
+    'SELECT * FROM user_profiles WHERE user_id = $1', [user.sub]
+  );
+  if (existing.rows.length > 0) return existing.rows[0];
 
-  try {
-    const result = await pool.query(
-      `UPDATE user_profiles 
-       SET display_name = $1, bio = $2, avatar_url = $3, updated_at = NOW() 
-       WHERE user_id = $4 
-       RETURNING *`,
-      [display_name, bio, avatar_url, userId]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'ไม่พบโปรไฟล์ที่ต้องการแก้ไข' });
-    }
-
-    res.json({ message: 'อัปเดตโปรไฟล์สำเร็จ', user: result.rows[0] });
-  } catch (err) {
-    console.error('[USER] update error:', err.message);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-/**
- * [T10] GET /api/users — ดูรายชื่อผู้ใช้ทั้งหมด (Admin Only)
- */
-router.get('/', requireAuth, requireRole('admin'), async (req, res) => {
-  try {
-    const result = await pool.query(
-      'SELECT * FROM user_profiles ORDER BY created_at DESC'
-    );
-    res.json({ users: result.rows, total: result.rowCount });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+  // สร้าง profile เริ่มต้นจาก JWT
+  const result = await pool.query(
+    `INSERT INTO user_profiles (user_id, username, email, role)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (user_id) DO UPDATE SET updated_at = NOW()
+     RETURNING *`,
+    [user.sub, user.username, user.email, user.role]
+  );
+  await logEvent({
+    level: 'INFO', event: 'PROFILE_CREATED',
+    userId: user.sub, message: `Auto-created profile for ${user.username}`
+  });
+  return result.rows[0];
+}
 
 // GET /api/users/health
-router.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'user-service' });
+router.get('/health', (_, res) => res.json({ status: 'ok', service: 'user-service' }));
+
+// ── ทุก route ต่อจากนี้ต้อง JWT ──
+router.use(requireAuth);
+
+// ── GET /api/users/me — ดู profile ของตัวเอง ──────────────────────────
+router.get('/me', async (req, res) => {
+  try {
+    const profile = await ensureProfile(req.user);
+    res.json({ profile });
+  } catch (err) {
+    console.error('[user] GET /me error:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── PUT /api/users/me — แก้ไข profile ────────────────────────────────
+router.put('/me', async (req, res) => {
+  const { display_name, bio, avatar_url } = req.body;
+  try {
+    await ensureProfile(req.user);  // ให้มี profile ก่อน
+    const result = await pool.query(
+      `UPDATE user_profiles
+       SET display_name = COALESCE($1, display_name),
+           bio          = COALESCE($2, bio),
+           avatar_url   = COALESCE($3, avatar_url),
+           updated_at   = NOW()
+       WHERE user_id = $4 RETURNING *`,
+      [display_name, bio, avatar_url, req.user.sub]
+    );
+    await logEvent({
+      level: 'INFO', event: 'PROFILE_UPDATED',
+      userId: req.user.sub, message: `Profile updated for ${req.user.username}`
+    });
+    res.json({ profile: result.rows[0] });
+  } catch (err) {
+    console.error('[user] PUT /me error:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── GET /api/users — รายชื่อผู้ใช้ทั้งหมด (admin only) ────────────────
+router.get('/', async (req, res) => {
+  if (req.user.role !== 'admin')
+    return res.status(403).json({ error: 'Forbidden: admin only' });
+
+  try {
+    const result = await pool.query(
+      `SELECT * FROM user_profiles ORDER BY user_id`
+    );
+    res.json({ users: result.rows, count: result.rowCount });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;
