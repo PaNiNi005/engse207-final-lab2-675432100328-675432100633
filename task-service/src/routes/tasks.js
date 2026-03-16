@@ -5,28 +5,17 @@ const requireAuth   = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Helper: ส่ง log
-async function logEvent({ level, event, userId, ip, method, path, statusCode, message, meta }) {
+// Helper: log ลง task-db โดยตรง (ไม่ใช้ log-service แยก)
+async function logEvent({ level, event, userId, message, meta }) {
   try {
-    await fetch('http://log-service:3003/api/logs/internal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        service: 'task-service',
-        level,
-        event,
-        user_id: userId,
-        ip_address: ip,
-        method,
-        path,
-        status_code: statusCode,
-        message,
-        meta
-      })
-    });
-  } catch (_) {}
+    await pool.query(
+      `INSERT INTO logs (level, event, user_id, message, meta) VALUES ($1,$2,$3,$4,$5)`,
+      [level, event, userId || null, message || null, meta ? JSON.stringify(meta) : null]
+    );
+  } catch (e) {
+    console.error('[task-log]', e.message);
+  }
 }
-
 // GET /api/tasks/health
 router.get('/health', (_, res) => res.json({ status:'ok', service:'task-service' }));
 
