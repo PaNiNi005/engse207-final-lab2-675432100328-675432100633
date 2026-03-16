@@ -57,6 +57,7 @@
 
 ---
 6. API Summary (Updated)
+   
 Auth Service:
 
 POST /api/auth/register - สมัครสมาชิก
@@ -65,11 +66,13 @@ POST /api/auth/login - เข้าสู่ระบบ
 
 GET /api/auth/me - ตรวจสอบข้อมูลผู้ใช้จาก Token
 
+
 Task Service:
 
 POST /api/tasks - สร้างงาน
 
 GET /api/tasks - ดูรายการงาน
+
 
 User Service:
 
