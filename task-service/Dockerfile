@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY src/ ./src/
+# เพิ่มบรรทัดนี้ต่อจาก COPY src/ ./src/
+COPY init.sql ./src/db/
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 EXPOSE 3002
