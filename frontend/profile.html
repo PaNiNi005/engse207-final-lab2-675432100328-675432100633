@@ -235,6 +235,17 @@
           </button>
         </div>
       </div>
+      
+    <a href="#" class="nav-item" onclick="doLogout(event)">
+  <span class="nav-icon">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M8.5 2H11.5C12.05 2 12.5 2.45 12.5 3V11C12.5 11.55 12.05 12 11.5 12H8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M5.5 10L2.5 7L5.5 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2.5 7H9.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+    </svg>
+  </span>
+  ออกจากระบบ
+</a>
 
       <!-- SIDE WIDGETS -->
       <div class="side-col">
@@ -328,6 +339,49 @@ async function loadProfile() {
   }
 }
 loadProfile();
+
+async function updateProfile() {
+  const display_name = document.getElementById('display_name').value;
+  const bio = document.getElementById('bio').value;
+  const btn = document.getElementById('save-btn');
+  const btnText = document.getElementById('btn-text');
+
+  try {
+    btn.disabled = true;
+    btnText.textContent = "กำลังบันทึก...";
+
+    const res = await fetch(`${USER_API}/api/users/me`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ display_name, bio })
+    });
+
+    if (res.ok) {
+      alert('อัปเดต Profile สำเร็จ!');
+      loadProfile(); // โหลดข้อมูลใหม่เพื่ออัปเดตชื่อที่แสดงบน UI ทันที
+    } else {
+      const errData = await res.json();
+      alert(`ผิดพลาด: ${errData.message || 'ไม่สามารถอัปเดตได้'}`);
+    }
+  } catch (err) {
+    console.error("Update Profile Error:", err);
+    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = "บันทึกการเปลี่ยนแปลง";
+  }
+}
+
+function doLogout(e) {
+  if(e) e.preventDefault(); // ป้องกันหน้ากระโดด
+  if(confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+    localStorage.removeItem('jwt_token');
+    window.location.href = 'index.html'; // ส่งกลับไปหน้าแรก
+  }
+}
 </script>
 </body>
 </html>
