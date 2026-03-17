@@ -1,12 +1,8 @@
 FROM nginx:1.25-alpine
+RUN rm -rf /usr/share/nginx/html/*
 
-# ลบไฟล์หน้า Welcome เดิมของ Nginx ทิ้งก่อน
-RUN rm /usr/share/nginx/html/*
-
-# ก๊อปไฟล์จากโฟลเดอร์ frontend ใน GitHub ไปวางที่ Root ของ Nginx (ห้ามใส่โฟลเดอร์ปลายทางซ้อน)
-COPY frontend/index.html /usr/share/nginx/html/index.html
-COPY frontend/profile.html /usr/share/nginx/html/profile.html
-COPY frontend/config.js /usr/share/nginx/html/config.js
+# ใช้เครื่องหมาย * เพื่อก๊อปปี้ทุกอย่างในโฟลเดอร์ frontend ไปวางที่ปลายทาง
+COPY frontend/* /usr/share/nginx/html/
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
