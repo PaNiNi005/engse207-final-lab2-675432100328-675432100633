@@ -17,17 +17,20 @@
 ### สมาชิกคนที่ 1: นาย ธนมินทร์ เปลี่ยนพร้อม
 
 **รับผิดชอบงานหลักดังต่อไปนี้**
-* **Infrastructure & Gateway (Part 1, 6):** จัดการ HTTPS Nginx Config, สร้าง Self-Signed Certificate และตั้งค่า Docker Compose รวมทุก Service
-* **Database & Seed Data (Part 2):** ออกแบบ Database Schema และจัดการข้อมูล Seed Users (Alice, Bob, Admin)
-* **Backend Services (Part 3-5):** พัฒนา Auth Service, Task Service และ Log Service (API Development)
-* **Testing & Quality Assurance (Part 9):** จัดทำ Test Cases และทดสอบระบบผ่าน curl commands ตามข้อกำหนด
+
+* **Backend Microservices:** พัฒนาและปรับปรุงโค้ดฝั่ง Server (Auth, Task, User Services) และเพิ่ม Register API
+* **Infrastructure & Cloud Deployment:** จัดการระบบฐานข้อมูลแบบแยกส่วน (Database-per-Service) และ Deploy ระบบขึ้น Railway
+* **Security & JWT:** ตั้งค่าการตรวจสอบสิทธิ์ (Authentication) และการจัดการ Environment Variables (Secrets) บน Cloud
+* **Database Schema:** ออกแบบและเตรียมความพร้อมของฐานข้อมูล PostgreSQL ทั้ง 3 ชุด
 
 ### สมาชิกคนที่ 2: นางสาว รัฐจิกาลณ์ กวงคำ
 
 **รับผิดชอบงานหลักดังต่อไปนี้**
-* **Frontend Development (Part 7-8):** พัฒนาหน้าจอ Task Board UI และ Log Dashboard (HTTPS Fetch & RBAC)
-* **Project Structure & Scaffolding:** ออกแบบและสร้างโครงสร้าง Repository, โฟลเดอร์ และไฟล์เริ่มต้นทั้งหมด
-* **Documentation & Integration:** จัดทำเอกสารและดูแลภาพรวมการเชื่อมต่อระหว่างหน้าบ้านและหลังบ้าน
+
+* **Frontend Development:** พัฒนาและปรับปรุง UI ทั้งหมด (index.html, profile.html) ให้รองรับระบบ Microservices
+* **Service Configuration:** จัดการไฟล์ config.js สำหรับเชื่อมต่อ Frontend เข้ากับ Cloud Endpoints ของแต่ละ Service
+* **Documentation & Templates:** จัดทำรายงานสรุปผลการดำเนินงานรายบุคคล และเตรียมโครงสร้างเอกสารของกลุ่ม
+* **Cloud Testing:** ตรวจสอบความถูกต้องของการแสดงผลข้อมูลบนระบบ Railway
 
 ---
 
