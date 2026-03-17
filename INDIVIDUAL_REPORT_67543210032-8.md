@@ -20,8 +20,8 @@
 * Backend Expansion: พัฒนา User Service ด้วย Node.js เพื่อรองรับการทำงานของระบบโปรไฟล์ และเพิ่มความสามารถในการสมัครสมาชิก (Register) ใน Auth Service พร้อมระบบ Hash รหัสผ่านด้วย bcrypt
 * Database-per-Service Migration: แยกฐานข้อมูล PostgreSQL ออกเป็น 3 อินสแตนซ์อิสระ (auth-db, task-db, user-db) บน Railway เพื่อให้สอดคล้องกับหลักสถาปัตยกรรม Microservices ที่ดี
 * Cloud Deployment & Orchestration: * ทำการ Deploy Microservices ทั้งหมดขึ้นบน Railway Platform
-* ** กำหนดค่า DATABASE_URL และ JWT_SECRET ให้สัมพันธ์กันระหว่างแต่ละ Service
-* ** จัดการระบบ Networking ให้แต่ละ Service สามารถสื่อสารกันได้ผ่าน Cloud Endpoints
+ * **กำหนดค่า:** DATABASE_URL และ JWT_SECRET ให้สัมพันธ์กันระหว่างแต่ละ Service
+ * **จัดการระบบ:** Networking ให้แต่ละ Service สามารถสื่อสารกันได้ผ่าน Cloud Endpoints
 * Refactored Logging Strategy: ยกเลิก Log Service แบบเดิม และเปลี่ยนมาเขียนระบบ Logging ภายในแต่ละ Microservice โดยตรง เพื่อลด Latency และเพิ่มความอิสระในการตรวจสอบข้อมูล (In-service logs)
 * Data Integrity: ออกแบบการเชื่อมโยงข้อมูลระหว่างฐานข้อมูลแบบ Logical Reference โดยใช้ user_id จาก JWT แทนการใช้ Foreign Key ข้ามฐานข้อมูล เพื่อคงความอิสระของแต่ละ Service
 
@@ -30,9 +30,9 @@
 * ปัญหาเรื่องการ Verify JWT บน Cloud: เมื่อแยก Service บน Railway พบว่าบาง Service ไม่สามารถตรวจสอบ Token ได้เนื่องจากความผิดพลาดในการระบุค่า Secret
 * **วิธีแก้ไข: ตรวจสอบและซิงค์ JWT_SECRET ในระบบ Environment Variables ของทุก Service ให้ตรงกันทั้งหมด และทดสอบการส่งผ่าน Token ระหว่าง Service
 * ปัญหา Database Connection Timeout: ในช่วงแรกที่รันบน Railway ตัว Service มักจะล้มเหลวเพราะฐานข้อมูลยังไม่พร้อมใช้งาน (Ready)
-* **วิธีแก้ไข: เพิ่มฟังก์ชัน Retry Logic ในส่วนการเชื่อมต่อฐานข้อมูล (Database Connection Helper) เพื่อให้ระบบพยายามเชื่อมต่อซ้ำจนกว่าจะสำเร็จก่อนเริ่มรัน Server
+ * **วิธีแก้ไข:** เพิ่มฟังก์ชัน Retry Logic ในส่วนการเชื่อมต่อฐานข้อมูล (Database Connection Helper) เพื่อให้ระบบพยายามเชื่อมต่อซ้ำจนกว่าจะสำเร็จก่อนเริ่มรัน Server
 * ปัญหาการจัดการ Schema บน Cloud: ไม่สามารถรันไฟล์ init.sql ผ่าน Docker Entrypoint ได้เหมือนใน Local
-* **วิธีแก้ไข: ปรับปรุงโค้ดใน index.js ให้ทำการตรวจสอบและสร้าง Table (DDL) อัตโนมัติเมื่อ Service เริ่มทำงาน (Auto-migration/Initialize)
+ * **วิธีแก้ไข:** ปรับปรุงโค้ดใน index.js ให้ทำการตรวจสอบและสร้าง Table (DDL) อัตโนมัติเมื่อ Service เริ่มทำงาน (Auto-migration/Initialize)
 
 ## สิ่งที่ได้เรียนรู้จากงานนี้
 
