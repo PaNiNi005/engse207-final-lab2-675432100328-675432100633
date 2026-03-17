@@ -32,62 +32,42 @@
 
 ```mermaid
 graph TD
-    %% -- ชั้น Client --
+    %% การจัดวางตำแหน่ง Client ไว้บนสุด
     Client[Browser / Client]
     
-    %% -- กำหนดกลุ่ม Railway Project เพื่อจัดองค์ประกอบ --
-    subgraph Railway Project
-        direction TB
-        
-        %% -- ชั้น Microservices (เรียงซ้ายไปขวา) --
-        ServicesLayer:::hidden
-        AuthSvc[Auth Service]
-        TaskSvc[Task Service]
-        UserSvc[User Service]
-        ServicesLayer --- AuthSvc
-        ServicesLayer --- TaskSvc
-        ServicesLayer --- UserSvc
-        
-        %% -- ชั้น Databases (เรียงซ้ายไปขวาให้ตรงกับ Service) --
-        DBsLayer:::hidden
-        AuthDB[(auth-db)]
-        TaskDB[(task-db)]
-        UserDB[(user-db)]
-        DBsLayer --- AuthDB
-        DBsLayer --- TaskDB
-        DBsLayer --- UserDB
+    subgraph RailwayProject [Railway Project]
+        %% กำหนดความสัมพันธ์ของแต่ละ Service กับ Database ของตนเอง
+        subgraph AuthStack [Auth Stack]
+            AuthSvc[Auth Service]
+            AuthDB[(auth-db)]
+            AuthSvc --> AuthDB
+        end
 
-        %% -- การเชื่อมต่อภายใน (Service ไปยัง DB ของตัวเอง) --
-        AuthSvc --> AuthDB
-        TaskSvc --> TaskDB
-        UserSvc --> UserDB
+        subgraph TaskStack [Task Stack]
+            TaskSvc[Task Service]
+            TaskDB[(task-db)]
+            TaskSvc --> TaskDB
+        end
+
+        subgraph UserStack [User Stack]
+            UserSvc[User Service]
+            UserDB[(user-db)]
+            UserSvc --> UserDB
+        end
     end
 
-    %% -- ชั้น Client เชื่อมต่อกับทุก Service ด้วย HTTPS --
+    %% เส้น HTTPS ลากจากบนลงล่าง จะไม่ตัดกัน
     Client -- "HTTPS" --> AuthSvc
     Client -- "HTTPS" --> TaskSvc
     Client -- "HTTPS" --> UserSvc
 
-    %% -- ความสัมพันธ์เชิงตรรกะ (Shared JWT Secret) --
+    %% เส้นความสัมพันธ์เชิงตรรกะ (ใช้เส้นประสีเทา)
     AuthSvc -. "Shared JWT Secret" .-> TaskSvc
     AuthSvc -. "Shared JWT Secret" .-> UserSvc
 
-    %% -- กำหนด Style เพื่อความสวยงาม --
-    classDef plain fill:#fff,stroke:#fff,stroke-width:0px,color:#fff;
-    classDef hidden display:none;
-    class ServicesLayer,DBsLayer hidden;
-    
-    %% ปรับสีกล่อง Service ให้ดูโปร่งขึ้น (ตามภาพต้นฉบับแต่ปรับให้สบายตา)
-    classDef svcFilled fill:#f1f0ff,stroke:#8f8f8f,stroke-width:1px,rx:5,ry:5;
-    class AuthSvc,TaskSvc,UserSvc svcFilled;
-    
-    %% ปรับสี Database
-    classDef dbFilled fill:#fff,stroke:#8f8f8f,stroke-width:1px;
-    class AuthDB,TaskDB,UserDB dbFilled;
-    
-    %% ปรับสี Client
-    classDef clientFilled fill:#f1f0ff,stroke:#8f8f8f,stroke-width:1px,rx:5,ry:5;
-    class Client clientFilled;
-
-    %% ปรับสีเส้น Shared Secret
-    linkStyle 6,7 stroke:#A9A9A9,stroke-dasharray: 5 5;
+    %% การปรับแต่งความสวยงาม
+    style RailwayProject fill:#f9f9f9,stroke:#333,stroke-width:1px
+    style Client fill:#e1f5fe,stroke:#01579b
+    style AuthSvc fill:#ede7f6,stroke:#4527a0
+    style TaskSvc fill:#ede7f6,stroke:#4527a0
+    style UserSvc fill:#ede7f6,stroke:#4527a0
