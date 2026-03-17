@@ -74,19 +74,4 @@ graph TD
 
 ---
 
-## Gateway Strategy
-กลุ่มของเราเลือกใช้ **Option A: Frontend Direct Call (Client-side Gateway)**
 
-**เหตุผล:** เนื่องจากแต่ละ Service บน Railway มีการจัดการ HTTPS และมอบหมาย Public URL ให้โดยเฉพาะอยู่แล้ว การให้ Frontend เรียกใช้แต่ละ Service โดยตรงผ่านไฟล์ config.js จึงเป็นวิธีที่ตั้งค่าง่ายที่สุดสำหรับการส่งงานสอบ ลดความซับซ้อนในการจัดการ Proxy และช่วยลดความหน่วง (Latency) ในการเรียกใช้ API
-
----
-
-## วิธีการรัน Local ด้วย Docker Compose
-หากต้องการทดสอบระบบในสภาพแวดล้อม Local ให้ดำเนินการดังนี้:
-
-1. Clone Repository นี้ลงเครื่อง
-2. ตรวจสอบไฟล์ `.env` โดยอ้างอิงจาก `.env.example` และตรวจสอบว่าค่า `JWT_SECRET` ตรงกันทุก Service
-3. ใช้คำสั่งเพื่อเริ่มต้นการทำงาน:
-
-```bash
-docker-compose up --build
