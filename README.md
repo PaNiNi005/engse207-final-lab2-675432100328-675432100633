@@ -76,6 +76,7 @@
 curl -X POST [AUTH_URL]/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"clouduser","email":"cloud@test.com","password":"password123"}'
+```
 
 ---
 
