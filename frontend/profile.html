@@ -108,29 +108,27 @@ async function loadProfile() {
   }
 }
 
-  async function updateProfile() {
-    const name = document.getElementById('display_name').value;
-    const bio = document.getElementById('bio').value;
+async function updateProfile() {
+  const name = document.getElementById('display_name').value;
+  const bio = document.getElementById('bio').value;
 
-    try {
-      const res = await fetch(`${USER_API}/api/users/me`, {
-        method: 'PUT',
-        headers: { 
-          'Authorization': `Bearer ${token}`, 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ name, bio }) // ใช้ 'name' แทน 'display_name'
-      });
+  try {
+    const res = await fetch(`${USER_API}/api/users/me`, {
+      method: 'PUT',
+      headers: { 
+        'Authorization': `Bearer ${token}`, 
+        'Content-Type': 'application/json' 
+      },
+      // ส่งคำว่า 'name' ไปให้ตรงกับที่ระบบใช้โชว์ Username/Email ในรูป
+      body: JSON.stringify({ name, bio }) 
+    });
 
-      if (res.ok) {
-        showToast('อัปเดต Profile สำเร็จ!');
-        loadProfile();
-      } else {
-        alert('เกิดข้อผิดพลาดในการอัปเดต');
-      }
-    } catch (err) { console.error("Update Error:", err); }
-  }
-
+    if (res.ok) {
+      showToast('บันทึกข้อมูลสำเร็จ!');
+      loadProfile(); // โหลดใหม่เพื่อเช็คว่าข้อมูลเข้าจริงไหม
+    }
+  } catch (err) { console.error(err); }
+}
   function showToast(msg) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
