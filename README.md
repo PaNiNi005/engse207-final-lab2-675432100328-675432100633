@@ -29,40 +29,17 @@
 ## Architecture Diagram (Cloud Version)
 สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
+```mermaid
 graph TD
-    %% Client Layer
-    Client[Browser / Postman]
-    
-    subgraph Railway [Railway Cloud Project]
-        direction TB
-        
-        %% Services Layer
-        subgraph Services [Microservices Layer]
-            direction LR
-            AuthSvc[Auth Service]
-            TaskSvc[Task Service]
-            UserSvc[User Service]
-        end
+    Browser[Browser / Client] -- HTTPS --> AuthSvc[Auth Service]
+    Browser -- HTTPS --> TaskSvc[Task Service]
+    Browser -- HTTPS --> UserSvc[User Service]
 
-        %% Databases Layer
-        subgraph Databases [Database-per-Service]
-            direction LR
-            AuthDB[(auth-db)]
-            TaskDB[(task-db)]
-            UserDB[(user-db)]
-        end
-
-        %% Internal Connections (Service to its DB)
-        AuthSvc --> AuthDB
-        TaskSvc --> TaskDB
-        UserSvc --> UserDB
+    subgraph "Railway Project"
+        AuthSvc --> AuthDB[(auth-db)]
+        TaskSvc --> TaskDB[(task-db)]
+        UserSvc --> UserDB[(user-db)]
     end
 
-    %% External Connections
-    Client -- "HTTPS (Port 3001)" --> AuthSvc
-    Client -- "HTTPS (Port 3002)" --> TaskSvc
-    Client -- "HTTPS (Port 3003)" --> UserSvc
-
-    %% Logical Dependencies
-    AuthSvc -. "Shared JWT Secret" .-> TaskSvc
-    AuthSvc -. "Shared JWT Secret" .-> UserSvc
+    AuthSvc -. Shared JWT Secret .-> TaskSvc
+    AuthSvc -. Shared JWT Secret .-> UserSvc
