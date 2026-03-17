@@ -74,10 +74,10 @@
 
 <script src="config.js"></script>
 <script>
-  const USER_API = window.APP_CONFIG.USER_URL;
-  const token = localStorage.getItem('jwt_token');
+// --- ส่วนของ Script ใน profile.html ---
 
-  if (!token) window.location.href = 'index.html';
+const USER_API = window.APP_CONFIG.USER_URL; // ใช้ URL จาก config.js ของคุณ
+const token = localStorage.getItem('jwt_token');
 
 async function loadProfile() {
   try {
@@ -87,21 +87,17 @@ async function loadProfile() {
     const data = await res.json();
     
     if (res.ok) {
-      // 1. ดึงข้อมูลจาก data.user (ตามโครงสร้างที่โชว์ในรูปภาพ)
+      // แก้จาก data.profile เป็น data.user ให้ตรงกับ Backend
       const u = data.user; 
       
-      // 2. นำค่าไปใส่ในช่อง Input (ชื่อ และ Bio)
+      // นำข้อมูลมาใส่ในช่อง Input เพื่อไม่ให้หน้าเว็บว่างเปล่า
       document.getElementById('display_name').value = u.name || '';
-      document.getElementById('bio').value = u.bio || ''; // ถ้าใน DB มีฟิลด์ bio
+      document.getElementById('bio').value = u.bio || ''; 
       
-      // 3. แสดงชื่อและอักษรย่อบนหัวข้อโปรไฟล์
-      const displayName = u.name || u.username || 'User';
+      // อัปเดตส่วนหัวของหน้า Profile
+      const displayName = u.name || 'User Profile';
       document.getElementById('header-name').textContent = displayName;
       document.getElementById('avatar-initial').textContent = displayName.charAt(0).toUpperCase();
-
-      // (เพิ่มเติม) ถ้าคุณอยากโชว์ Email หรือ Role เหมือนในรูป 
-      // คุณสามารถเพิ่ม <p> ใน HTML แล้วสั่ง:
-      // document.getElementById('user-email').textContent = u.email;
     }
   } catch (err) {
     console.error("Load Profile Error:", err);
@@ -109,8 +105,8 @@ async function loadProfile() {
 }
 
 async function updateProfile() {
-  const name = document.getElementById('display_name').value;
-  const bio = document.getElementById('bio').value;
+  const nameValue = document.getElementById('display_name').value;
+  const bioValue = document.getElementById('bio').value;
 
   try {
     const res = await fetch(`${USER_API}/api/users/me`, {
@@ -119,26 +115,23 @@ async function updateProfile() {
         'Authorization': `Bearer ${token}`, 
         'Content-Type': 'application/json' 
       },
-      // ส่งคำว่า 'name' ไปให้ตรงกับที่ระบบใช้โชว์ Username/Email ในรูป
-      body: JSON.stringify({ name, bio }) 
+      // ส่งคำว่า 'name' ไปแทน 'display_name' เพื่อให้บันทึกลง Database ได้จริง
+      body: JSON.stringify({ name: nameValue, bio: bioValue }) 
     });
 
     if (res.ok) {
-      showToast('บันทึกข้อมูลสำเร็จ!');
-      loadProfile(); // โหลดใหม่เพื่อเช็คว่าข้อมูลเข้าจริงไหม
+      showToast('บันทึกข้อมูลสำเร็จแล้ว!');
+      loadProfile(); // โหลดใหม่เพื่อเช็คว่าข้อมูล "คงอยู่" จริงๆ
+    } else {
+      alert('บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่อ Railway');
     }
-  } catch (err) { console.error(err); }
-}
-  function showToast(msg) {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = '✅ ' + msg;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+  } catch (err) {
+    console.error("Update Error:", err);
   }
+}
 
-  loadProfile();
+// เรียกใช้งานฟังก์ชันเมื่อโหลดหน้า
+loadProfile();
 </script>
 </body>
 </html>
