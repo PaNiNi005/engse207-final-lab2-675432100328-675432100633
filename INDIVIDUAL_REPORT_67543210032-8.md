@@ -28,21 +28,25 @@
 
 ## ปัญหาที่พบและวิธีการแก้ไข
 
-* **ปัญหาการสื่อสารระหว่าง Docker Containers:** ในช่วงแรก Services ไม่สามารถเชื่อมต่อฐานข้อมูลได้เนื่องจากใช้ `localhost` ใน Connection String 
-    * **วิธีแก้ไข:** เปลี่ยนไปใช้ชื่อ Service (เช่น `db-service`) ที่กำหนดใน Docker Compose แทนการใช้ IP หรือ localhost เพื่อให้ระบบ DNS ของ Docker จัดการเส้นทางให้ถูกต้อง
-* **ปัญหา JWT Validation:** พบปัญหา Token ไม่ผ่านการตรวจสอบเมื่อข้าม Service เนื่องจากปัญหาเรื่อง Secret Key หรือการดึงค่าจาก Header
-    * **วิธีแก้ไข:** ตรวจสอบการจัดการสภาพแวดล้อม (Environment Variables) ให้ทุก Service ใช้ Secret เดียวกัน และปรับ Middleware ให้รองรับรูปแบบ `Bearer <token>` อย่างถูกต้อง
+* ปัญหาเรื่องการ Verify JWT บน Cloud: เมื่อแยก Service บน Railway พบว่าบาง Service ไม่สามารถตรวจสอบ Token ได้เนื่องจากความผิดพลาดในการระบุค่า Secret
+วิธีแก้ไข: ตรวจสอบและซิงค์ JWT_SECRET ในระบบ Environment Variables ของทุก Service ให้ตรงกันทั้งหมด และทดสอบการส่งผ่าน Token ระหว่าง Service
+
+ปัญหา Database Connection Timeout: ในช่วงแรกที่รันบน Railway ตัว Service มักจะล้มเหลวเพราะฐานข้อมูลยังไม่พร้อมใช้งาน (Ready)
+
+วิธีแก้ไข: เพิ่มฟังก์ชัน Retry Logic ในส่วนการเชื่อมต่อฐานข้อมูล (Database Connection Helper) เพื่อให้ระบบพยายามเชื่อมต่อซ้ำจนกว่าจะสำเร็จก่อนเริ่มรัน Server
+
+ปัญหาการจัดการ Schema บน Cloud: ไม่สามารถรันไฟล์ init.sql ผ่าน Docker Entrypoint ได้เหมือนใน Local
+
+วิธีแก้ไข: ปรับปรุงโค้ดใน index.js ให้ทำการตรวจสอบและสร้าง Table (DDL) อัตโนมัติเมื่อ Service เริ่มทำงาน (Auto-migration/Initialize)
 
 ## สิ่งที่ได้เรียนรู้จากงานนี้
 
-* **Microservices Architecture:** เข้าใจการแยกส่วนหน้าที่ของ Service (Separation of Concerns) และความท้าทายในการจัดการข้อมูลที่กระจายตัวอยู่คนละส่วน
-* **HTTPS Termination:** ได้เรียนรู้บทบาทของ API Gateway ในการจัดการความปลอดภัย (SSL/TLS) ก่อนจะส่งต่อ Request ไปยัง Backend
-* **Database Seeding & Integrity:** เข้าใจความสำคัญของการเตรียมข้อมูลเริ่มต้น (Seed Data) และการรักษาความสัมพันธ์ของข้อมูลในระดับ Database Schema
-* **Container Orchestration:** เห็นภาพรวมของการจัดการ Lifecycle ของ Application หลายๆ ตัวพร้อมกันด้วย Docker Compose ซึ่งช่วยให้สภาพแวดล้อมการพัฒนามีความเสถียรและเหมือนกันในทุกเครื่อง
+* Cloud-Native Development: เข้าใจกระบวนการนำระบบ Microservices ขึ้นใช้งานจริงบน Cloud และการจัดการค่า Configuration ต่างๆ ในสภาวะแวดล้อมที่ต่างจากเครื่อง Local
+* Microservices Autonomy: ได้เห็นข้อดีของการแยกฐานข้อมูล (Database-per-Service) ที่ช่วยให้การแก้ไข Service หนึ่งไม่ส่งผลกระทบต่อโครงสร้างข้อมูลของ Service อื่น
+* PaaS Efficiency: เรียนรู้วิธีการใช้ความสามารถของ Railway ในการจัดการ HTTPS, Health Checks และ Deployment Pipelines ซึ่งช่วยลดภาระงานด้าน Infrastructure ไปได้มาก
+* Scalable Architecture: เข้าใจความสำคัญของ API Gateway Strategy และการเลือกใช้แนวทางที่เหมาะสมกับขนาดและความซับซ้อนของระบบ
 
 ## แนวทางการพัฒนาต่อไปใน Set 2
 
-หากต้องต่อยอดไปยัง Set 2 ควรมีการปรับปรุงดังนี้:
-* **Centralized Logging:** พัฒนาให้ Log Service รับข้อมูลผ่าน Message Broker (เช่น RabbitMQ) เพื่อลดการหน่วง (Latency) ของระบบหลักเมื่อมีการบันทึก Log จำนวนมาก
-* **Database Separation:** แยก Database ออกเป็นราย Service (Database per Service) เพื่อให้แต่ละ Microservice เป็นอิสระจากกันอย่างแท้จริงตามหลักสถาปัตยกรรมที่ดี
-* **Service Mesh:** นำเครื่องมืออย่าง Kong หรือ Traefik มาจัดการ API Gateway แทน Nginx เพื่อการจัดการ Route และ Rate Limiting ที่ซับซ้อนขึ้น
+****
+--------------
