@@ -162,9 +162,17 @@ curl -X POST [TASK_URL]/api/tasks \
 
 ### Screenshots
 
-- **ภาพการ Deployment**: หน้า Dashboard ของ Railway (แสดงทั้ง 3 Services และ 3 DBs)
-- **ภาพการ Register/Login**: ผลลัพธ์ผ่าน URL บน Cloud
-- **ภาพการจัดการ Profile**: หน้า profile.html ผ่าน Cloud
-- **ภาพการจัดการ Tasks**: หน้า Dashboard งานผ่าน Cloud
-
+📂 **screenshots/**
+- **01_railway_dashboard.png**: Railway Project แสดง 3 services + 3 databases
+- **02_auth_register_cloud.png**: POST register -> 201
+- **03_auth_login_cloud.png**: POST login -> JWT token
+- **04_auth_me_cloud.png**: GET /auth/me -> user info
+- **05_user_me_cloud.png**: GET /users/me -> profile
+- **06_user_update_cloud.png**: PUT /users/me -> อัปเดต
+- **07_task_create_cloud.png**: POST /tasks -> 201
+- **08_task_list_cloud.png**: GET /tasks -> task list
+- **09_protected_401.png**: GET /tasks (ไม่มี JWT) -> 401
+- **10_member_403.png**: GET /users (member) -> 403
+- **11_admin_users_200.png**: GET /users (admin) -> 200
+- **12_readme_architecture.png**: Architecture diagram ใน README
 ---
