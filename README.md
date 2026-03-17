@@ -36,7 +36,6 @@
 
 ## Gateway Strategy
 กลุ่มของเราเลือกใช้ **Option A: Frontend Direct Call (Client-side Gateway)**
-
 **เหตุผล:** เนื่องจากแต่ละ Service บน Railway มีการจัดการ HTTPS และมอบหมาย Public URL ให้โดยเฉพาะอยู่แล้ว การให้ Frontend เรียกใช้แต่ละ Service โดยตรงผ่านไฟล์ config.js จึงเป็นวิธีที่ตั้งค่าง่ายที่สุดสำหรับการส่งงานสอบ ลดความซับซ้อนในการจัดการ Proxy และช่วยลดความหน่วง (Latency) ในการเรียกใช้ API
 
 ---
@@ -48,3 +47,32 @@
 2. ตรวจสอบไฟล์ `.env` โดยอ้างอิงจาก `.env.example` และตรวจสอบว่าค่า `JWT_SECRET` ตรงกันทุก Service
 3. ใช้คำสั่งเพื่อเริ่มต้นการทำงาน:
 * docker-compose up --build
+
+---
+
+### ระบบจะเปิด Port ดังนี้:
+
+- Auth Service: 3001
+- Task Service: 3002
+- User Service: 3003
+
+---
+
+### Environment Variables ที่ใช้
+การตั้งค่าที่สำคัญในทุก Service ทั้งบน Railway และ Local:
+
+- **DATABASE_URL**: URL สำหรับเชื่อมต่อฐานข้อมูล PostgreSQL ของแต่ละ Service
+- **JWT_SECRET**: รหัสลับสำหรับการตรวจสอบ Token (ต้องกำหนดให้ตรงกันทุก Service)
+- **PORT**: พอร์ตที่ Service รัน (เช่น 3001, 3002, 3003)
+- **NODE_ENV**: กำหนดสถานะเป็น production เมื่อรันบน Cloud
+- 
+---
+
+### วิธีการทดสอบด้วย curl (Cloud URLs)
+*กรุณาเปลี่ยน [URL] เป็น URL จริงจากระบบ Railway ของกลุ่ม*
+
+**1. ทดสอบการสมัครสมาชิก (Register):**
+```bash
+curl -X POST [AUTH_URL]/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"clouduser","email":"cloud@test.com","password":"password123"}'
