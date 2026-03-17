@@ -30,10 +30,6 @@
 
 สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
-### Architecture Diagram (Cloud Version)
-
-สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
-
 ```mermaid
 graph TD
     %% การจัดวางตำแหน่ง Client ไว้บนสุด
