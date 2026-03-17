@@ -30,8 +30,52 @@
 
 สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
-<img width="903" height="622" alt="image" src="https://github.com/user-attachments/assets/3448d795-39bf-4b6b-af8e-cd75b58fab2d" />
+### Architecture Diagram (Cloud Version)
 
+สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
+
+```mermaid
+graph TD
+    %% การจัดวางตำแหน่ง Client ไว้บนสุด
+    Client[Browser / Client]
+    
+    subgraph RailwayProject [Railway Project]
+        %% กำหนดความสัมพันธ์ของแต่ละ Service กับ Database ของตนเอง
+        subgraph AuthStack [Auth Stack]
+            AuthSvc[Auth Service]
+            AuthDB[(auth-db)]
+            AuthSvc --> AuthDB
+        end
+
+        subgraph TaskStack [Task Stack]
+            TaskSvc[Task Service]
+            TaskDB[(task-db)]
+            TaskSvc --> TaskDB
+        end
+
+        subgraph UserStack [User Stack]
+            UserSvc[User Service]
+            UserDB[(user-db)]
+            UserSvc --> UserDB
+        end
+    end
+
+    %% เส้น HTTPS ลากจากบนลงล่าง จะไม่ตัดกัน
+    Client -- "HTTPS" --> AuthSvc
+    Client -- "HTTPS" --> TaskSvc
+    Client -- "HTTPS" --> UserSvc
+
+    %% เส้นความสัมพันธ์เชิงตรรกะ (ใช้เส้นประสีเทา)
+    AuthSvc -. "Shared JWT Secret" .-> TaskSvc
+    AuthSvc -. "Shared JWT Secret" .-> UserSvc
+
+    %% การปรับแต่งความสวยงาม
+    style RailwayProject fill:#f9f9f9,stroke:#333,stroke-width:1px
+    style Client fill:#e1f5fe,stroke:#01579b
+    style AuthSvc fill:#ede7f6,stroke:#4527a0
+    style TaskSvc fill:#ede7f6,stroke:#4527a0
+    style UserSvc fill:#ede7f6,stroke:#4527a0
+```
 ---
 
 ## Gateway Strategy
