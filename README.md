@@ -73,7 +73,7 @@ docker-compose up --build
 ### วิธีการทดสอบด้วย curl (Cloud URLs)
 *กรุณาเปลี่ยน [URL] เป็น URL จริงจากระบบ Railway ของกลุ่ม*
 
-**1. ทดสอบการสมัครสมาชิก (Register):**
+### 1. ทดสอบการสมัครสมาชิก (Register):
 ```bash
 curl -X POST [AUTH_URL]/api/auth/register \
   -H "Content-Type: application/json" \
@@ -82,7 +82,7 @@ curl -X POST [AUTH_URL]/api/auth/register \
 
 ---
 
-### 2. ทดสอบการเข้าสู่ระบบ (Login) เพื่อรับ Token:
+ ### 2. ทดสอบการเข้าสู่ระบบ (Login) เพื่อรับ Token:
 
 ```bash
 TOKEN=$(curl -s -X POST [AUTH_URL]/api/auth/login \
@@ -91,3 +91,39 @@ TOKEN=$(curl -s -X POST [AUTH_URL]/api/auth/login \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 echo "TOKEN: $TOKEN"
+
+---
+
+### 3. ทดสอบการดึงข้อมูล Profile (User Service):
+```bash
+curl [USER_URL]/api/users/me -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+### 4. ทดสอบการสร้างงาน (Task Service):
+
+```bash
+curl -X POST [TASK_URL]/api/tasks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test Cloud Task","priority":"high"}'
+```
+---
+
+### Known Limitations
+
+- **No Foreign Keys Across Databases**: เนื่องจากใช้ Database-per-Service จึงไม่มีการเชื่อมความสัมพันธ์ระดับฐานข้อมูลด้วย Foreign Key ระหว่างกัน
+- **Logical Reference**: การระบุตัวตนผู้ใช้ในฐานข้อมูล Task และ User จะใช้วิธี Logical Reference ผ่าน user_id ที่ถอดมาจาก JWT Payload เท่านั้น
+- **Logging**: Log ถูกจัดเก็บแยกตามฐานข้อมูลของแต่ละ Service ทำให้การตรวจสอบเหตุการณ์ในภาพรวมต้องไล่ดูจากฐานข้อมูลแต่ละตัวแยกกัน
+
+---
+
+### Screenshots
+
+- **ภาพการ Deployment**: หน้า Dashboard ของ Railway (แสดงทั้ง 3 Services และ 3 DBs)
+- **ภาพการ Register/Login**: ผลลัพธ์ผ่าน URL บน Cloud
+- **ภาพการจัดการ Profile**: หน้า profile.html ผ่าน Cloud
+- **ภาพการจัดการ Tasks**: หน้า Dashboard งานผ่าน Cloud
+
+---
