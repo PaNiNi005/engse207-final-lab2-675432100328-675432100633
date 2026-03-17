@@ -31,38 +31,46 @@
 สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
 ```mermaid
-graph LR
-    %% บังคับทิศทางจากซ้ายไปขวา (Left to Right) เพื่อให้ดูง่ายขึ้น
+graph TD
+    %% การจัดวางตำแหน่ง Client ไว้บนสุด
+    Client[Browser / Client]
     
-    Client[Browser / Client] -- "HTTPS" --> AuthSvc
-    Client -- "HTTPS" --> TaskSvc
-    Client -- "HTTPS" --> UserSvc
-
-    subgraph "Railway Cloud Project"
-        direction LR
-        
-        subgraph Auth_Stack [Auth Service]
-            AuthSvc[Auth Service] --> AuthDB[(auth-db)]
+    subgraph RailwayProject [Railway Project]
+        %% กำหนดความสัมพันธ์ของแต่ละ Service กับ Database ของตนเอง
+        subgraph AuthStack [Auth Stack]
+            AuthSvc[Auth Service]
+            AuthDB[(auth-db)]
+            AuthSvc --> AuthDB
         end
 
-        subgraph Task_Stack [Task Service]
-            TaskSvc[Task Service] --> TaskDB[(task-db)]
+        subgraph TaskStack [Task Stack]
+            TaskSvc[Task Service]
+            TaskDB[(task-db)]
+            TaskSvc --> TaskDB
         end
 
-        subgraph User_Stack [User Service]
-            UserSvc[User Service] --> UserDB[(user-db)]
+        subgraph UserStack [User Stack]
+            UserSvc[User Service]
+            UserDB[(user-db)]
+            UserSvc --> UserDB
         end
     end
 
-    %% แสดงความสัมพันธ์เชิงตรรกะแบบไม่รกตา
-    AuthSvc -. "Validation with Shared Secret" .-> TaskSvc
-    AuthSvc -. "Validation with Shared Secret" .-> UserSvc
+    %% เส้น HTTPS ลากจากบนลงล่าง จะไม่ตัดกัน
+    Client -- "HTTPS" --> AuthSvc
+    Client -- "HTTPS" --> TaskSvc
+    Client -- "HTTPS" --> UserSvc
 
-    %% สไตล์ตกแต่ง
-    style Client fill:#f1f0ff,stroke:#7b61ff
-    style Auth_Stack fill:#fdfdfd,stroke:#ddd
-    style Task_Stack fill:#fdfdfd,stroke:#ddd
-    style User_Stack fill:#fdfdfd,stroke:#ddd
+    %% เส้นความสัมพันธ์เชิงตรรกะ (ใช้เส้นประสีเทา)
+    AuthSvc -. "Shared JWT Secret" .-> TaskSvc
+    AuthSvc -. "Shared JWT Secret" .-> UserSvc
+
+    %% การปรับแต่งความสวยงาม
+    style RailwayProject fill:#f9f9f9,stroke:#333,stroke-width:1px
+    style Client fill:#e1f5fe,stroke:#01579b
+    style AuthSvc fill:#ede7f6,stroke:#4527a0
+    style TaskSvc fill:#ede7f6,stroke:#4527a0
+    style UserSvc fill:#ede7f6,stroke:#4527a0
 
 ---
 
