@@ -166,14 +166,33 @@ curl -X POST [TASK_URL]/api/tasks \
 <img width="1919" height="965" alt="image" src="https://github.com/user-attachments/assets/a1987fa9-de6a-4c94-991e-89ebdb15877b" />
 
 - **02_auth_register_cloud.png**: POST register -> 201
+<img width="1093" height="134" alt="image" src="https://github.com/user-attachments/assets/7eaeb301-fdbd-4ccb-a492-3352806f37cb" />
+
 - **03_auth_login_cloud.png**: POST login -> JWT token
+<img width="1087" height="140" alt="image" src="https://github.com/user-attachments/assets/41846fb0-2f3d-442f-82a5-f1c287380e09" />
+
 - **04_auth_me_cloud.png**: GET /auth/me -> user info
+<img width="1096" height="103" alt="image" src="https://github.com/user-attachments/assets/91408e40-c070-43b2-ac50-c6f62b652726" />
+
 - **05_user_me_cloud.png**: GET /users/me -> profile
+<img width="1086" height="102" alt="image" src="https://github.com/user-attachments/assets/d439e690-0dd1-4859-945f-28b949d15153" />
+
 - **06_user_update_cloud.png**: PUT /users/me -> อัปเดต
+<img width="1473" height="113" alt="image" src="https://github.com/user-attachments/assets/f2d27c5b-7612-40da-8a11-f77d789d8549" />
+
 - **07_task_create_cloud.png**: POST /tasks -> 201
+<img width="1453" height="100" alt="image" src="https://github.com/user-attachments/assets/ac2cf84f-8966-472f-85d4-cdef32863dd0" />
+
 - **08_task_list_cloud.png**: GET /tasks -> task list
+<img width="1454" height="99" alt="image" src="https://github.com/user-attachments/assets/c9095f3d-cc85-4cfd-9398-ef16c0bf291c" />
+
 - **09_protected_401.png**: GET /tasks (ไม่มี JWT) -> 401
+<img width="802" height="42" alt="image" src="https://github.com/user-attachments/assets/5bdb6cea-887b-47b6-a25f-e4fd2da0a33a" />
+
 - **10_member_403.png**: GET /users (member) -> 403
+
 - **11_admin_users_200.png**: GET /users (admin) -> 200
+
 - **12_readme_architecture.png**: Architecture diagram ใน README
+
 ---
