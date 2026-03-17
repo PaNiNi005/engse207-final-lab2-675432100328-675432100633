@@ -1,8 +1,10 @@
-# README.md - ENGSE207 Software Architecture Final Lab Set 2
+# ENGSE207 Software Architecture Final Lab Set 2
 
 ## ข้อมูลผู้จัดทำ (กลุ่ม S1-5)
 1. นางสาว รัฐจิกาลณ์ กวงคำ (รหัสนักศึกษา: 67543210063-3)
 2. นาย ธนมินทร์ เปลี่ยนพร้อม (รหัสนักศึกษา: 67543210032-8)
+
+**Repository:** `https://github.com/PaNiNi005/final-lab-set1`
 
 ---
 
