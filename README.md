@@ -131,6 +131,7 @@ TOKEN=$(curl -s -X POST [AUTH_URL]/api/auth/login \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 echo "TOKEN: $TOKEN"
+```
 
 ---
 
