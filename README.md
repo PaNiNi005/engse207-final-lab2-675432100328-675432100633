@@ -11,9 +11,9 @@
 ## Cloud Service URLs (Railway)
 | Service | Public URL (Production) |
 | :--- | :--- |
-| Auth Service | [ระบุ URL ของ Auth Service บน Railway ที่นี่] |
-| Task Service | [ระบุ URL ของ Task Service บน Railway ที่นี่] |
-| User Service | [ระบุ URL ของ User Service บน Railway ที่นี่] |
+| Auth Service | https://auth-service-production-ee6c.up.railway.app |
+| Task Service | https://task-service-production-d541.up.railway.app |
+| User Service | https://user-service-production-801b.up.railway.app |
 
 ---
 
@@ -111,11 +111,11 @@ docker-compose up --build
 ---
 
 ### วิธีการทดสอบด้วย curl (Cloud URLs)
-*กรุณาเปลี่ยน [URL] เป็น URL จริงจากระบบ Railway ของกลุ่ม*
+*https://frontend-production-2280.up.railway.app/index.html 
 
 ### 1. ทดสอบการสมัครสมาชิก (Register):
 ```bash
-curl -X POST [AUTH_URL]/api/auth/register \
+curl -X POST auth-service-production-ee6c.up.railway.app/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"clouduser","email":"cloud@test.com","password":"password123"}'
 ```
@@ -125,7 +125,7 @@ curl -X POST [AUTH_URL]/api/auth/register \
  ### 2. ทดสอบการเข้าสู่ระบบ (Login) เพื่อรับ Token:
 
 ```bash
-TOKEN=$(curl -s -X POST [AUTH_URL]/api/auth/login \
+TOKEN=$(curl -s -X POST auth-service-production-ee6c.up.railway.app/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"cloud@test.com","password":"password123"}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
