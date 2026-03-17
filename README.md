@@ -47,6 +47,4 @@
 1. Clone Repository นี้ลงเครื่อง
 2. ตรวจสอบไฟล์ `.env` โดยอ้างอิงจาก `.env.example` และตรวจสอบว่าค่า `JWT_SECRET` ตรงกันทุก Service
 3. ใช้คำสั่งเพื่อเริ่มต้นการทำงาน:
-
-```bash
-docker-compose up --build
+* docker-compose up --build
