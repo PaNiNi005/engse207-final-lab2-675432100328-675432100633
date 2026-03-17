@@ -5,84 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>👤 Profile — Final Lab Set 2</title>
   <style>
-    /* ═══════════════════════════════════════════════════════
-       GLOBAL RESET & BASE (จากที่คุณให้มา)
-    ═══════════════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:       #0f172a;
-      --surface:  #1e293b;
-      --surface2: #273448;
-      --border:   #334155;
-      --text:     #e2e8f0;
-      --muted:    #94a3b8;
-      --blue:     #3b82f6;
-      --blue2:    #2563eb;
-      --green:    #22c55e;
-      --yellow:   #f59e0b;
-      --red:      #ef4444;
-      --purple:   #a855f7;
-      --radius:   10px;
+      --bg: #0f172a; --surface: #1e293b; --surface2: #273448;
+      --border: #334155; --text: #e2e8f0; --muted: #94a3b8;
+      --blue: #3b82f6; --blue2: #2563eb; --purple: #a855f7; --radius: 10px;
     }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.5;
-    }
-    button { cursor: pointer; font-family: inherit; transition: all .15s; }
-    input, select, textarea { font-family: inherit; }
-    .hidden { display: none !important; }
-
-    /* APP LAYOUT */
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
     #app-page { display: flex; height: 100vh; }
-    .sidebar {
-      width: 220px; background: var(--surface); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; flex-shrink: 0;
-    }
-    .sidebar-logo { padding: 1.25rem 1.5rem; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .6rem; }
+    .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sidebar-logo { padding: 1.25rem 1.5rem; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); }
     .sidebar-nav { flex: 1; padding: .75rem; }
-    .nav-item {
-      display: flex; align-items: center; gap: .75rem; padding: .65rem 1rem;
-      border-radius: 8px; cursor: pointer; color: var(--muted); font-size: .9rem;
-      font-weight: 500; border: none; background: none; width: 100%; text-align: left;
-      transition: all .15s; margin-bottom: 2px; text-decoration: none;
-    }
+    .nav-item { display: flex; align-items: center; gap: .75rem; padding: .65rem 1rem; border-radius: 8px; color: var(--muted); font-size: .9rem; text-decoration: none; margin-bottom: 2px; }
     .nav-item:hover { background: var(--surface2); color: var(--text); }
     .nav-item.active { background: rgba(59,130,246,.15); color: var(--blue); }
-
-    /* MAIN CONTENT */
     .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-    .page-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
-    .page-title { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; }
+    .page-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); background: var(--surface); }
     .page-body { padding: 2rem; flex: 1; display: flex; justify-content: center; }
-
-    /* PROFILE CARD & FORM */
     .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 600px; height: fit-content; }
     .profile-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2rem; }
     .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; }
-    
     .form-group { margin-bottom: 1.5rem; }
-    .form-group label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; font-weight: 500; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: .75rem 1rem; background: var(--bg);
-      border: 1px solid var(--border); border-radius: 8px; color: var(--text);
-      font-size: 1rem; transition: border-color .2s;
-    }
-    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); }
-    .form-group textarea { min-height: 100px; resize: vertical; }
-
-    .btn-submit {
-      width: 100%; padding: .85rem; background: var(--blue); color: white;
-      border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; margin-top: .5rem;
-    }
-    .btn-submit:hover { background: var(--blue2); transform: translateY(-1px); }
-
-    /* TOASTS */
-    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: .5rem; }
-    .toast { padding: .75rem 1.25rem; border-radius: 10px; font-size: .88rem; font-weight: 500; animation: fadeIn .2s ease; box-shadow: 0 8px 25px rgba(0,0,0,.3); max-width: 320px; }
-    .toast.success { background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+    .form-group label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; }
+    .form-group input, .form-group textarea { width: 100%; padding: .75rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; }
+    .btn-submit { width: 100%; padding: .85rem; background: var(--blue); color: white; border: none; border-radius: 8px; font-weight: 600; }
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; }
+    .toast { padding: .75rem 1.25rem; border-radius: 10px; font-size: .88rem; background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); animation: fadeIn .2s ease; }
     @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
   </style>
 </head>
@@ -92,40 +40,30 @@
   <nav class="sidebar">
     <div class="sidebar-logo">📋 Task Board</div>
     <div class="sidebar-nav">
-      <a href="index.html" class="nav-item">
-        <span class="nav-icon">🏠</span> หน้าหลัก
-      </a>
-      <a href="profile.html" class="nav-item active">
-        <span class="nav-icon">👤</span> โปรไฟล์
-      </a>
+      <a href="index.html" class="nav-item"><span class="nav-icon">🏠</span> หน้าหลัก</a>
+      <a href="profile.html" class="nav-item active"><span class="nav-icon">👤</span> โปรไฟล์</a>
     </div>
   </nav>
 
   <div class="main-content">
-    <div class="page-header">
-      <div class="page-title">👤 แก้ไขข้อมูลส่วนตัว</div>
-    </div>
-
+    <div class="page-header"><h1 style="font-size: 1.3rem;">👤 แก้ไขข้อมูลส่วนตัว</h1></div>
     <div class="page-body">
       <div class="profile-card">
         <div class="profile-header">
           <div class="profile-avatar" id="avatar-initial">?</div>
           <div>
-            <h2 id="header-name">User Profile</h2>
+            <h2 id="header-name">กำลังโหลด...</h2>
             <p style="color: var(--muted); font-size: 0.9rem;">จัดการข้อมูลส่วนตัวของคุณ</p>
           </div>
         </div>
-
         <div class="form-group">
-          <label>ชื่อที่แสดง (Display Name)</label>
+          <label>ชื่อที่แสดง (Name)</label>
           <input type="text" id="display_name" placeholder="ระบุชื่อของคุณ">
         </div>
-
         <div class="form-group">
           <label>คำอธิบายตัวเอง (Bio)</label>
           <textarea id="bio" placeholder="บอกเล่าเรื่องราวของคุณสักนิด..."></textarea>
         </div>
-
         <button class="btn-submit" onclick="updateProfile()">💾 บันทึกการเปลี่ยนแปลง</button>
       </div>
     </div>
@@ -136,73 +74,63 @@
 
 <script src="config.js"></script>
 <script>
-  const USER = window.APP_CONFIG.USER_URL;
+  const USER_API = window.APP_CONFIG.USER_URL;
   const token = localStorage.getItem('jwt_token');
 
-  // ตรวจสอบ Token เบื้องต้น
-  if (!token) {
-    window.location.href = 'index.html';
-  }
+  if (!token) window.location.href = 'index.html';
 
   async function loadProfile() {
     try {
-      const res = await fetch(`${USER}/api/users/me`, {
+      const res = await fetch(`${USER_API}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       
       if (res.ok) {
-        // แสดงข้อมูลใน Form
-        document.getElementById('display_name').value = data.profile.display_name || '';
-        document.getElementById('bio').value = data.profile.bio || '';
+        // เปลี่ยนจาก data.profile เป็น data.user ตามโครงสร้างใน index.html
+        const u = data.user; 
+        document.getElementById('display_name').value = u.name || '';
+        document.getElementById('bio').value = u.bio || '';
         
-        // อัปเดต UI เล็กน้อย
-        const name = data.profile.display_name || 'User';
-        document.getElementById('header-name').textContent = name;
-        document.getElementById('avatar-initial').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('header-name').textContent = u.name || 'User';
+        document.getElementById('avatar-initial').textContent = (u.name || 'U').charAt(0).toUpperCase();
       }
-    } catch (err) {
-      console.error("Load Profile Error:", err);
-    }
+    } catch (err) { console.error("Load Error:", err); }
   }
 
   async function updateProfile() {
-    const display_name = document.getElementById('display_name').value;
+    const name = document.getElementById('display_name').value;
     const bio = document.getElementById('bio').value;
 
     try {
-      const res = await fetch(`${USER}/api/users/me`, {
+      const res = await fetch(`${USER_API}/api/users/me`, {
         method: 'PUT',
         headers: { 
           'Authorization': `Bearer ${token}`, 
           'Content-Type': 'application/json' 
         },
-        body: JSON.stringify({ display_name, bio })
+        body: JSON.stringify({ name, bio }) // ใช้ 'name' แทน 'display_name'
       });
 
       if (res.ok) {
         showToast('อัปเดต Profile สำเร็จ!');
-        loadProfile(); // โหลดข้อมูลใหม่เพื่ออัปเดต UI
+        loadProfile();
       } else {
         alert('เกิดข้อผิดพลาดในการอัปเดต');
       }
-    } catch (err) {
-      console.error("Update Error:", err);
-    }
+    } catch (err) { console.error("Update Error:", err); }
   }
 
   function showToast(msg) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
-    toast.className = 'toast success';
+    toast.className = 'toast';
     toast.textContent = '✅ ' + msg;
     container.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // เริ่มโหลดข้อมูล
   loadProfile();
 </script>
-
 </body>
 </html>
