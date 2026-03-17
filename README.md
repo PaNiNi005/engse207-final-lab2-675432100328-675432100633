@@ -4,7 +4,7 @@
 1. นางสาว รัฐจิกาลณ์ กวงคำ (รหัสนักศึกษา: 67543210063-3)
 2. นาย ธนมินทร์ เปลี่ยนพร้อม (รหัสนักศึกษา: 67543210032-8)
 
-**Repository:** `https://github.com/PaNiNi005/final-lab-set1`
+**Repository:** `https://github.com/PaNiNi005/engse207-final-lab2-675432100328-675432100633/tree/main`
 
 ---
 
