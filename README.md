@@ -31,43 +31,54 @@
 สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
 ```mermaid
-graph TD
-    %% -- ชั้น Client --
-    Client[Browser / Client]
+graph LR
+    %% บังคับทิศทางจากซ้ายไปขวา (Left to Right) เพื่อให้ดูง่ายขึ้น
     
-    %% -- ชั้น Microservices (จัดกลุ่มให้อยู่ระดับเดียวกัน) --
-    subgraph Services [Railway Cloud Services]
+    Client[Browser / Client] -- "HTTPS" --> AuthSvc
+    Client -- "HTTPS" --> TaskSvc
+    Client -- "HTTPS" --> UserSvc
+
+    subgraph "Railway Cloud Project"
         direction LR
-        AuthSvc[Auth Service]
-        TaskSvc[Task Service]
-        UserSvc[User Service]
+        
+        subgraph Auth_Stack [Auth Service]
+            AuthSvc[Auth Service] --> AuthDB[(auth-db)]
+        end
+
+        subgraph Task_Stack [Task Service]
+            TaskSvc[Task Service] --> TaskDB[(task-db)]
+        end
+
+        subgraph User_Stack [User Service]
+            UserSvc[User Service] --> UserDB[(user-db)]
+        end
     end
 
-    %% -- ชั้น Databases (วางไว้ใต้ Service ของตัวเองตรงๆ) --
-    AuthDB[(auth-db)]
-    TaskDB[(task-db)]
-    UserDB[(user-db)]
+    %% แสดงความสัมพันธ์เชิงตรรกะแบบไม่รกตา
+    AuthSvc -. "Validation with Shared Secret" .-> TaskSvc
+    AuthSvc -. "Validation with Shared Secret" .-> UserSvc
 
-    %% -- การเชื่อมต่อจาก Client ไปยังแต่ละ Service (เส้นจะเรียงขนานกันสวยงาม) --
-    Client ==>|HTTPS| AuthSvc
-    Client ==>|HTTPS| TaskSvc
-    Client ==>|HTTPS| UserSvc
+    %% สไตล์ตกแต่ง
+    style Client fill:#f1f0ff,stroke:#7b61ff
+    style Auth_Stack fill:#fdfdfd,stroke:#ddd
+    style Task_Stack fill:#fdfdfd,stroke:#ddd
+    style User_Stack fill:#fdfdfd,stroke:#ddd
 
-    %% -- การเชื่อมต่อภายใน (Service -> Database) --
-    AuthSvc --> AuthDB
-    TaskSvc --> TaskDB
-    UserSvc --> UserDB
+---
 
-    %% -- ความสัมพันธ์เชิงตรรกะ (ใช้เส้นประเพื่อไม่ให้กวนสายตา) --
-    AuthSvc -.->|Shared Secret| TaskSvc
-    AuthSvc -.->|Shared Secret| UserSvc
+## Gateway Strategy
+กลุ่มของเราเลือกใช้ **Option A: Frontend Direct Call (Client-side Gateway)**
 
-    %% -- สไตล์ตกแต่งให้ดูสะอาดตา --
-    style Client fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-    style Services fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5 5
-    style AuthSvc fill:#ffffff,stroke:#673ab7,stroke-width:2px
-    style TaskSvc fill:#ffffff,stroke:#673ab7,stroke-width:2px
-    style UserSvc fill:#ffffff,stroke:#673ab7,stroke-width:2px
-    style AuthDB fill:#ffffff,stroke:#333
-    style TaskDB fill:#ffffff,stroke:#333
-    style UserDB fill:#ffffff,stroke:#333
+**เหตุผล:** เนื่องจากแต่ละ Service บน Railway มีการจัดการ HTTPS และมอบหมาย Public URL ให้โดยเฉพาะอยู่แล้ว การให้ Frontend เรียกใช้แต่ละ Service โดยตรงผ่านไฟล์ config.js จึงเป็นวิธีที่ตั้งค่าง่ายที่สุดสำหรับการส่งงานสอบ ลดความซับซ้อนในการจัดการ Proxy และช่วยลดความหน่วง (Latency) ในการเรียกใช้ API
+
+---
+
+## วิธีการรัน Local ด้วย Docker Compose
+หากต้องการทดสอบระบบในสภาพแวดล้อม Local ให้ดำเนินการดังนี้:
+
+1. Clone Repository นี้ลงเครื่อง
+2. ตรวจสอบไฟล์ `.env` โดยอ้างอิงจาก `.env.example` และตรวจสอบว่าค่า `JWT_SECRET` ตรงกันทุก Service
+3. ใช้คำสั่งเพื่อเริ่มต้นการทำงาน:
+
+```bash
+docker-compose up --build
