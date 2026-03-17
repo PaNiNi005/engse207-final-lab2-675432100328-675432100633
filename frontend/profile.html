@@ -79,24 +79,34 @@
 
   if (!token) window.location.href = 'index.html';
 
-  async function loadProfile() {
-    try {
-      const res = await fetch(`${USER_API}/api/users/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
+async function loadProfile() {
+  try {
+    const res = await fetch(`${USER_API}/api/users/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      // 1. ดึงข้อมูลจาก data.user (ตามโครงสร้างที่โชว์ในรูปภาพ)
+      const u = data.user; 
       
-      if (res.ok) {
-        // เปลี่ยนจาก data.profile เป็น data.user ตามโครงสร้างใน index.html
-        const u = data.user; 
-        document.getElementById('display_name').value = u.name || '';
-        document.getElementById('bio').value = u.bio || '';
-        
-        document.getElementById('header-name').textContent = u.name || 'User';
-        document.getElementById('avatar-initial').textContent = (u.name || 'U').charAt(0).toUpperCase();
-      }
-    } catch (err) { console.error("Load Error:", err); }
+      // 2. นำค่าไปใส่ในช่อง Input (ชื่อ และ Bio)
+      document.getElementById('display_name').value = u.name || '';
+      document.getElementById('bio').value = u.bio || ''; // ถ้าใน DB มีฟิลด์ bio
+      
+      // 3. แสดงชื่อและอักษรย่อบนหัวข้อโปรไฟล์
+      const displayName = u.name || u.username || 'User';
+      document.getElementById('header-name').textContent = displayName;
+      document.getElementById('avatar-initial').textContent = displayName.charAt(0).toUpperCase();
+
+      // (เพิ่มเติม) ถ้าคุณอยากโชว์ Email หรือ Role เหมือนในรูป 
+      // คุณสามารถเพิ่ม <p> ใน HTML แล้วสั่ง:
+      // document.getElementById('user-email').textContent = u.email;
+    }
+  } catch (err) {
+    console.error("Load Profile Error:", err);
   }
+}
 
   async function updateProfile() {
     const name = document.getElementById('display_name').value;

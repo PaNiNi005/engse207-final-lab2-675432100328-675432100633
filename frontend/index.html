@@ -600,12 +600,26 @@ function renderJwtInspector() {
   } catch(e) {}
 }
 
-// Auto-Login
+// ปรับแก้ส่วนท้ายของไฟล์ index.html
 if (token) {
+  // มี Token ให้ตรวจสอบก่อน
   fetch(`${AUTH}/api/auth/verify`, { headers: { Authorization: `Bearer ${token}` } })
     .then(r => r.json())
-    .then(data => data.valid ? initApp(data.user) : doLogout())
-    .catch(() => doLogout());
+    .then(data => {
+      if (data.valid) {
+        initApp(data.user); // ถ้าผ่าน ให้เข้าหน้าหลัก
+      } else {
+        doLogout(); // ถ้าไม่ผ่าน (Token หมดอายุ) ให้ไปหน้า Login
+        document.getElementById('page-login').style.display = 'block'; 
+      }
+    })
+    .catch(() => {
+        doLogout();
+        document.getElementById('page-login').style.display = 'block';
+    });
+} else {
+  // ไม่มี Token ตั้งแต่แรก ให้โชว์หน้า Login ทันที
+  document.getElementById('page-login').style.display = 'block';
 }
 </script>
 </body>
