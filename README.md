@@ -190,9 +190,12 @@ curl -X POST [TASK_URL]/api/tasks \
 <img width="802" height="42" alt="image" src="https://github.com/user-attachments/assets/5bdb6cea-887b-47b6-a25f-e4fd2da0a33a" />
 
 - **10_member_403.png**: GET /users (member) -> 403
+<img width="1452" height="76" alt="image" src="https://github.com/user-attachments/assets/18a8597c-b795-41c1-960a-1cb1d2b315f7" />
 
 - **11_admin_users_200.png**: GET /users (admin) -> 200
+<img width="1887" height="102" alt="image" src="https://github.com/user-attachments/assets/9920e5d7-3a17-43fe-96d9-40efeb6bd1f1" />
 
 - **12_readme_architecture.png**: Architecture diagram ใน README
+<img width="680" height="479" alt="image" src="https://github.com/user-attachments/assets/8da0ae96-81fc-4a77-9583-e9aed96eba17" />
 
 ---
