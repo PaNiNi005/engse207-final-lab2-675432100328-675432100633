@@ -162,7 +162,6 @@ curl -X POST [TASK_URL]/api/tasks \
 
 ### Screenshots
 
-📂 **screenshots/**
 - **01_railway_dashboard.png**: Railway Project แสดง 3 services + 3 databases
 - **02_auth_register_cloud.png**: POST register -> 201
 - **03_auth_login_cloud.png**: POST login -> JWT token
