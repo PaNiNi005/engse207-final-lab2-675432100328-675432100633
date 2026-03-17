@@ -8,36 +8,31 @@
 
 ## ขอบเขตงานที่รับผิดชอบ
 
-รับผิดชอบในส่วนของ **Infrastructure, Backend Services** และ **Security Architecture** โดยมีรายละเอียดดังนี้:
-* การตั้งค่า **HTTPS Nginx (API Gateway)** และการจัดการ Self-Signed Certificate
-* พัฒนา **Auth Service, Task Service** และ **Log Service** (Microservices)
-* ออกแบบ **Database Schema** และจัดการ **Seed Users** สำหรับระบบ
-* การทำ **Containerization** ด้วย Docker Compose เพื่อรวมทุก Service เข้าด้วยกัน
-* การทดสอบระบบด้วย **curl commands** และจัดทำ Test Cases (Part 9)
+ในโปรเจกต์ Set 2 นี้ รับผิดชอบการเปลี่ยนผ่านสถาปัตยกรรมจาก Local สู่ Cloud-Native Microservices และการจัดการข้อมูลแบบแยกส่วน โดยมีรายละเอียดดังนี้:
+* ออกแบบและพัฒนา User Service (New Service) เพื่อจัดการข้อมูล Profile และสิทธิ์ผู้ใช้งาน
+* พัฒนาฟีเจอร์ Register API เพิ่มเติมใน Auth Service เพื่อรองรับ End-to-end User Flow\
+* ปรับปรุงระบบ Logging จากเดิมที่เป็น Service แยก ให้เป็นแบบ Database-per-Service Logging
+* ดำเนินการด้าน Cloud Infrastructure โดย Deploy ทั้ง 3 Services และ 3 Databases บน Railway
+* จัดการระบบความปลอดภัยผ่าน Shared JWT Secret และการตั้งค่า Environment Variables บนระบบ Cloud
 
 ## สิ่งที่ได้ดำเนินการด้วยตนเอง
 
-* **HTTPS & Gateway Configuration:** ตั้งค่า Nginx ให้ทำหน้าที่เป็น Reverse Proxy และทำ HTTPS Termination โดยใช้ Certificate ที่สร้างขึ้นเอง เพื่อความปลอดภัยในการสื่อสารข้อมูล
-* **Microservices Development:** พัฒนา Backend ทั้ง 3 ส่วนโดยใช้ Node.js/Express:
-    * **Auth Service:** ระบบจัดการ Login และออก JWT Token พร้อมเก็บ Password แบบ Encrypted (Hashing)
-    * **Task Service:** ระบบจัดการข้อมูลงาน (CRUD) ที่มีการตรวจสอบสิทธิ์ผ่าน Middleware
-    * **Log Service:** ระบบบันทึก Event สำคัญลง Database พร้อม API สำหรับเรียกดูข้อมูลและสถิติ (Stats)
-* **Security Implementation:** พัฒนา Middleware สำหรับตรวจสอบ JWT และจำกัดสิทธิ์การเข้าถึง (RBAC) โดยเฉพาะส่วนของ Log API ที่อนุญาตให้เฉพาะสิทธิ์ Admin เท่านั้น
-* **Containerization:** เขียน `Dockerfile` สำหรับแต่ละ Service และไฟล์ `docker-compose.yml` เพื่อให้ระบบทั้งหมดสามารถรันขึ้นมาได้ด้วยคำสั่งเดียวและสื่อสารกันผ่าน Docker Network
-* **Database & Seeding:** เขียน Script สำหรับล้างข้อมูลและสร้างข้อมูลผู้ใช้เริ่มต้น (Alice, Bob, Admin) เพื่อให้ระบบพร้อมสำหรับการทดสอบทันที
+* Backend Expansion: พัฒนา User Service ด้วย Node.js เพื่อรองรับการทำงานของระบบโปรไฟล์ และเพิ่มความสามารถในการสมัครสมาชิก (Register) ใน Auth Service พร้อมระบบ Hash รหัสผ่านด้วย bcrypt
+* Database-per-Service Migration: แยกฐานข้อมูล PostgreSQL ออกเป็น 3 อินสแตนซ์อิสระ (auth-db, task-db, user-db) บน Railway เพื่อให้สอดคล้องกับหลักสถาปัตยกรรม Microservices ที่ดี
+* Cloud Deployment & Orchestration: * ทำการ Deploy Microservices ทั้งหมดขึ้นบน Railway Platform
+* **กำหนดค่า DATABASE_URL และ JWT_SECRET ให้สัมพันธ์กันระหว่างแต่ละ Service
+* **จัดการระบบ Networking ให้แต่ละ Service สามารถสื่อสารกันได้ผ่าน Cloud Endpoints
+* Refactored Logging Strategy: ยกเลิก Log Service แบบเดิม และเปลี่ยนมาเขียนระบบ Logging ภายในแต่ละ Microservice โดยตรง เพื่อลด Latency และเพิ่มความอิสระในการตรวจสอบข้อมูล (In-service logs)
+* Data Integrity: ออกแบบการเชื่อมโยงข้อมูลระหว่างฐานข้อมูลแบบ Logical Reference โดยใช้ user_id จาก JWT แทนการใช้ Foreign Key ข้ามฐานข้อมูล เพื่อคงความอิสระของแต่ละ Service
 
 ## ปัญหาที่พบและวิธีการแก้ไข
 
 * ปัญหาเรื่องการ Verify JWT บน Cloud: เมื่อแยก Service บน Railway พบว่าบาง Service ไม่สามารถตรวจสอบ Token ได้เนื่องจากความผิดพลาดในการระบุค่า Secret
-วิธีแก้ไข: ตรวจสอบและซิงค์ JWT_SECRET ในระบบ Environment Variables ของทุก Service ให้ตรงกันทั้งหมด และทดสอบการส่งผ่าน Token ระหว่าง Service
-
-ปัญหา Database Connection Timeout: ในช่วงแรกที่รันบน Railway ตัว Service มักจะล้มเหลวเพราะฐานข้อมูลยังไม่พร้อมใช้งาน (Ready)
-
-วิธีแก้ไข: เพิ่มฟังก์ชัน Retry Logic ในส่วนการเชื่อมต่อฐานข้อมูล (Database Connection Helper) เพื่อให้ระบบพยายามเชื่อมต่อซ้ำจนกว่าจะสำเร็จก่อนเริ่มรัน Server
-
-ปัญหาการจัดการ Schema บน Cloud: ไม่สามารถรันไฟล์ init.sql ผ่าน Docker Entrypoint ได้เหมือนใน Local
-
-วิธีแก้ไข: ปรับปรุงโค้ดใน index.js ให้ทำการตรวจสอบและสร้าง Table (DDL) อัตโนมัติเมื่อ Service เริ่มทำงาน (Auto-migration/Initialize)
+* **วิธีแก้ไข: ตรวจสอบและซิงค์ JWT_SECRET ในระบบ Environment Variables ของทุก Service ให้ตรงกันทั้งหมด และทดสอบการส่งผ่าน Token ระหว่าง Service
+* ปัญหา Database Connection Timeout: ในช่วงแรกที่รันบน Railway ตัว Service มักจะล้มเหลวเพราะฐานข้อมูลยังไม่พร้อมใช้งาน (Ready)
+* **วิธีแก้ไข: เพิ่มฟังก์ชัน Retry Logic ในส่วนการเชื่อมต่อฐานข้อมูล (Database Connection Helper) เพื่อให้ระบบพยายามเชื่อมต่อซ้ำจนกว่าจะสำเร็จก่อนเริ่มรัน Server
+* ปัญหาการจัดการ Schema บน Cloud: ไม่สามารถรันไฟล์ init.sql ผ่าน Docker Entrypoint ได้เหมือนใน Local
+* **วิธีแก้ไข: ปรับปรุงโค้ดใน index.js ให้ทำการตรวจสอบและสร้าง Table (DDL) อัตโนมัติเมื่อ Service เริ่มทำงาน (Auto-migration/Initialize)
 
 ## สิ่งที่ได้เรียนรู้จากงานนี้
 
