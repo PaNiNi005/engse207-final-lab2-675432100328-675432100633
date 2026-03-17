@@ -41,7 +41,3 @@
 * PaaS Efficiency: เรียนรู้วิธีการใช้ความสามารถของ Railway ในการจัดการ HTTPS, Health Checks และ Deployment Pipelines ซึ่งช่วยลดภาระงานด้าน Infrastructure ไปได้มาก
 * Scalable Architecture: เข้าใจความสำคัญของ API Gateway Strategy และการเลือกใช้แนวทางที่เหมาะสมกับขนาดและความซับซ้อนของระบบ
 
-## แนวทางการพัฒนาต่อไปใน Set 2
-
-****
---------------
