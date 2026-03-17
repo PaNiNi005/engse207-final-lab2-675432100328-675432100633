@@ -1,111 +1,43 @@
-# ENGSE207 Software Architecture: Final Lab Set 2
-## Microservices Scale-Up + Cloud Deployment
+# README.md - ENGSE207 Software Architecture Final Lab Set 2
 
-> README สำหรับการส่งงาน **Final Lab Set 2** — การขยายระบบ Microservices, การใช้ Database-per-Service Pattern และการ Deploy บน Railway Cloud
-
----
-
-## 1. ข้อมูลรายวิชาและสมาชิก
-
-**รายวิชา:** ENGSE207 Software Architecture  
-**ชื่องาน:** Final Lab — ชุดที่ 2: Microservices Scale-Up + Cloud Deployment  
-
-**สมาชิกในกลุ่ม**
-* **67543210032-8** นาย ธนมินทร์ เปลี่ยนพร้อม
-* **67543210063-3** นางสาว รัฐจิกาลณ์ กวงคำ
-
-**Repository:** `https://github.com/PaNiNi005/engse207-final-lab2-675432100328-675432100633/tree/main`
+## ข้อมูลผู้จัดทำ (กลุ่ม S1-5)
+1. นางสาว รัฐจิกาลณ์ กวงคำ (รหัสนักศึกษา: 67543210063-3)
+2. นาย ธนมินทร์ เปลี่ยนพร้อม (รหัสนักศึกษา: 67543210032-8)
 
 ---
 
-## 2. Cloud Service URLs (Production)
-* **Auth Service:** `https://[AUTH_SERVICE_URL]`
-* **Task Service:** `https://[TASK_SERVICE_URL]`
-* **User Service:** `https://[USER_SERVICE_URL]`
-* **Frontend:** `https://[FRONTEND_URL]`
+## Cloud Service URLs (Railway)
+| Service | Public URL (Production) |
+| :--- | :--- |
+| Auth Service | [ระบุ URL ของ Auth Service บน Railway ที่นี่] |
+| Task Service | [ระบุ URL ของ Task Service บน Railway ที่นี่] |
+| User Service | [ระบุ URL ของ User Service บน Railway ที่นี่] |
 
 ---
 
-## 3. Architecture Overview (Cloud Version)
-
-
-* **Database-per-Service:** ระบบแยกฐานข้อมูลอิสระ 3 ชุด (`auth-db`, `task-db`, `user-db`) เพื่อลดการพึ่งพากัน (Loose Coupling)
-* **Logical Reference:** ใช้ `user_id` เป็น Logical Reference อ้างอิงระหว่างฐานข้อมูล โดยยึด `users.id` จาก `auth-db` เป็นหลัก
-* **Gateway Strategy:** เลือกใช้ **[ระบุ Option เช่น Option A: Frontend Direct Calls]** เนื่องจากเป็นวิธีที่ลดความซับซ้อนในการจัดการ Infrastructure บน Cloud ในขณะที่ยังคงความปลอดภัยผ่าน JWT Validation ในระดับ Service
-
----
-
-## 4. สิ่งที่พัฒนาเพิ่มเติมจาก Set 1
-1. **Register API:** เพิ่มระบบลงทะเบียนผู้ใช้ใหม่ใน `Auth Service`
-2. **User Service:** สร้าง Service ใหม่สำหรับจัดการโปรไฟล์ผู้ใช้และข้อมูลส่วนตัว
-3. **Database Decoupling:** แยกฐานข้อมูลราย Service ตามข้อกำหนดของ Database-per-Service
-4. **Cloud Deployment:** ย้ายระบบขึ้น Railway พร้อมตั้งค่า Environment Variables แยกราย Service
-5. **JWT Synchronization:** ใช้ `JWT_SECRET` ค่าเดียวกันทุก Service เพื่อให้ทุก Service ตรวจสอบสิทธิ์ (Verify) ได้อย่างถูกต้อง
+## การต่อยอดจาก Set 1 สู่ Set 2
+ในโปรเจกต์ Set 2 นี้ เป็นการพัฒนาระบบต่อยอดจาก Set 1 โดยเปลี่ยนสถาปัตยกรรมจากรูปแบบเดิมให้มีความเป็น Microservices ที่สมบูรณ์ยิ่งขึ้น ดังนี้:
+1. การขยาย Service: เพิ่ม User Service เพื่อจัดการข้อมูลโปรไฟล์ และเพิ่มระบบ Register API ใน Auth Service (ซึ่งใน Set 1 ไม่มี)
+2. รูปแบบฐานข้อมูล: เปลี่ยนจากฐานข้อมูลที่ใช้ร่วมกัน (Shared Database) มาเป็นรูปแบบ Database-per-Service โดยแยกฐานข้อมูล 3 ชุดอิสระต่อกัน
+3. ระบบ Cloud: ย้ายการ Deploy จากการรันผ่าน Docker ในเครื่อง Local ขึ้นสู่ระบบ Cloud จริงบน Railway Platform
+4. การจัดการ Logging: เปลี่ยนจาก Log Service ส่วนกลาง มาเป็นการเขียน Log ลงในฐานข้อมูลของแต่ละ Service โดยตรง เพื่อลดความซับซ้อนของการสื่อสารข้าม Network บน Cloud
 
 ---
 
-## 5. การตั้งค่าและการรันระบบ (Local)
+## Architecture Diagram (Cloud Version)
+สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
-### 5.1 สร้าง `.env`
-คัดลอกจาก `.env.example` และกำหนดค่าดังนี้:
-* `JWT_SECRET`: (ต้องใช้ค่าเดียวกันทุก Service)
-* `DATABASE_URL`: (Connection String ของ Postgres)
+```mermaid
+graph TD
+    Browser[Browser / Client] -- HTTPS --> AuthSvc[Auth Service]
+    Browser -- HTTPS --> TaskSvc[Task Service]
+    Browser -- HTTPS --> UserSvc[User Service]
 
-### 5.2 รันผ่าน Docker Compose
-* docker compose up --build
+    subgraph "Railway Project"
+        AuthSvc --> AuthDB[(auth-db)]
+        TaskSvc --> TaskDB[(task-db)]
+        UserSvc --> UserDB[(user-db)]
+    end
 
----
-
-## 6. API Summary (Updated)
-   
-* Auth Service:
-
-POST /api/auth/register - สมัครสมาชิก
-
-POST /api/auth/login - เข้าสู่ระบบ
-
-GET /api/auth/me - ตรวจสอบข้อมูลผู้ใช้จาก Token
-
-
-* Task Service:
-
-POST /api/tasks - สร้างงาน
-
-GET /api/tasks - ดูรายการงาน
-
-
-* User Service:
-
-GET /api/users/me - ดูโปรไฟล์ของตนเอง
-
-PUT /api/users/me - แก้ไขโปรไฟล์
-
-GET /api/users - ดูรายชื่อผู้ใช้ทั้งหมด (Admin Only)
-
----
-
-## 7. ปัญหาที่พบและแนวทางแก้ไข
-
-1. Database Connectivity: ปัญหาการเชื่อมต่อระหว่าง Container บน Railway
-
-* แก้ไข: ใช้การอ้างอิงผ่าน DATABASE_URL โดยตั้งค่าผ่าน Railway Variable ตามชื่อ Service ของ Database
-
-2. Profile Initialization: การสร้างโปรไฟล์อัตโนมัติเมื่อ login ครั้งแรก
-
-* แก้ไข: ปรับ Logic ใน User Service หาก GET /api/users/me แล้วไม่พบ record ให้สร้าง user_profiles เริ่มต้นโดยดึงข้อมูลจาก JWT Payload
-
-3. CORS Policy: เบราว์เซอร์บล็อกการเรียก API ข้าม Domain
-
-* แก้ไข: ตั้งค่า CORS ในระดับ Application ของทุก Service ให้รองรับ Domain ของ Frontend บน Railway
-
----
-
-## 8. ภาคผนวกและเอกสารประกอบ
-
-* TEAM_SPLIT.md: รายละเอียดการแบ่งงานของสมาชิก
-
-* INDIVIDUAL_REPORT_[studentid].md: รายงานรายบุคคล
-
-* Screenshots: ดูหลักฐานการทำงานบน Cloud ได้ที่โฟลเดอร์ /screenshots
-
----
+    AuthSvc -. Shared JWT Secret .-> TaskSvc
+    AuthSvc -. Shared JWT Secret .-> UserSvc
