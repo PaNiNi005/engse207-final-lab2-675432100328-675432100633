@@ -65,7 +65,7 @@
 - **JWT_SECRET**: รหัสลับสำหรับการตรวจสอบ Token (ต้องกำหนดให้ตรงกันทุก Service)
 - **PORT**: พอร์ตที่ Service รัน (เช่น 3001, 3002, 3003)
 - **NODE_ENV**: กำหนดสถานะเป็น production เมื่อรันบน Cloud
-- 
+  
 ---
 
 ### วิธีการทดสอบด้วย curl (Cloud URLs)
@@ -76,3 +76,15 @@
 curl -X POST [AUTH_URL]/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"clouduser","email":"cloud@test.com","password":"password123"}'
+
+---
+
+### 2. ทดสอบการเข้าสู่ระบบ (Login) เพื่อรับ Token:
+
+```bash
+TOKEN=$(curl -s -X POST [AUTH_URL]/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"cloud@test.com","password":"password123"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+echo "TOKEN: $TOKEN"
