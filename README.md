@@ -31,35 +31,43 @@
 สถาปัตยกรรมระบบบน Railway ประกอบด้วย 3 Services และ 3 Databases ที่ทำงานแยกกันอิสระ:
 
 ```mermaid
-graph LR
-    %% บังคับทิศทางจากซ้ายไปขวา (Left to Right) เพื่อให้ดูง่ายขึ้น
+graph TD
+    %% -- ชั้น Client --
+    Client[Browser / Client]
     
-    Client[Browser / Client] -- "HTTPS" --> AuthSvc
-    Client -- "HTTPS" --> TaskSvc
-    Client -- "HTTPS" --> UserSvc
-
-    subgraph "Railway Cloud Project"
+    %% -- ชั้น Microservices (จัดกลุ่มให้อยู่ระดับเดียวกัน) --
+    subgraph Services [Railway Cloud Services]
         direction LR
-        
-        subgraph Auth_Stack [Auth Service]
-            AuthSvc[Auth Service] --> AuthDB[(auth-db)]
-        end
-
-        subgraph Task_Stack [Task Service]
-            TaskSvc[Task Service] --> TaskDB[(task-db)]
-        end
-
-        subgraph User_Stack [User Service]
-            UserSvc[User Service] --> UserDB[(user-db)]
-        end
+        AuthSvc[Auth Service]
+        TaskSvc[Task Service]
+        UserSvc[User Service]
     end
 
-    %% แสดงความสัมพันธ์เชิงตรรกะแบบไม่รกตา
-    AuthSvc -. "Validation with Shared Secret" .-> TaskSvc
-    AuthSvc -. "Validation with Shared Secret" .-> UserSvc
+    %% -- ชั้น Databases (วางไว้ใต้ Service ของตัวเองตรงๆ) --
+    AuthDB[(auth-db)]
+    TaskDB[(task-db)]
+    UserDB[(user-db)]
 
-    %% สไตล์ตกแต่ง
-    style Client fill:#f1f0ff,stroke:#7b61ff
-    style Auth_Stack fill:#fdfdfd,stroke:#ddd
-    style Task_Stack fill:#fdfdfd,stroke:#ddd
-    style User_Stack fill:#fdfdfd,stroke:#ddd
+    %% -- การเชื่อมต่อจาก Client ไปยังแต่ละ Service (เส้นจะเรียงขนานกันสวยงาม) --
+    Client ==>|HTTPS| AuthSvc
+    Client ==>|HTTPS| TaskSvc
+    Client ==>|HTTPS| UserSvc
+
+    %% -- การเชื่อมต่อภายใน (Service -> Database) --
+    AuthSvc --> AuthDB
+    TaskSvc --> TaskDB
+    UserSvc --> UserDB
+
+    %% -- ความสัมพันธ์เชิงตรรกะ (ใช้เส้นประเพื่อไม่ให้กวนสายตา) --
+    AuthSvc -.->|Shared Secret| TaskSvc
+    AuthSvc -.->|Shared Secret| UserSvc
+
+    %% -- สไตล์ตกแต่งให้ดูสะอาดตา --
+    style Client fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    style Services fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5 5
+    style AuthSvc fill:#ffffff,stroke:#673ab7,stroke-width:2px
+    style TaskSvc fill:#ffffff,stroke:#673ab7,stroke-width:2px
+    style UserSvc fill:#ffffff,stroke:#673ab7,stroke-width:2px
+    style AuthDB fill:#ffffff,stroke:#333
+    style TaskDB fill:#ffffff,stroke:#333
+    style UserDB fill:#ffffff,stroke:#333
