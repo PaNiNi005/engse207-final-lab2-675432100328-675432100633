@@ -16,18 +16,15 @@
 
 ## สิ่งที่ได้ดำเนินการด้วยตนเอง
 
-* **Frontend Development:** พัฒนาไฟล์ `index.html` และ `logs.html` โดยเน้นการสร้าง UI ที่เป็น Single Page Application (SPA) และรองรับการทำงานแบบ Responsive
-* **RBAC Implementation (Frontend):** เขียน Logic สำหรับตรวจสอบสิทธิ์ผู้ใช้ (Role-Based Access Control) โดยซ่อนเมนู Users และจำกัดการเข้าถึงหน้า Log Dashboard ให้เข้าได้เฉพาะ Admin เท่านั้น
-* **Security Integration:** ปรับปรุงฟังก์ชัน `fetch()` ให้รองรับ HTTPS และจัดการระบบการเก็บ JWT Token ไว้ใน `localStorage` พร้อมระบบ Auto-login เมื่อมีการ Refresh หน้าจอ
-* **Logging Display:** พัฒนาส่วนแสดงผล Log ที่ดึงข้อมูลจาก Server โดยตรง (แทนการใช้ localStorage) และเพิ่มระบบ Filter ตามระดับความรุนแรง (Level) และ Service
-* **Project Organization:** วางโครงสร้างโฟลเดอร์สำหรับแบ่งแยก Service ต่างๆ ออกจากกัน เพื่อให้สมาชิกในทีมสามารถพัฒนา Backend และ Infrastructure ได้อย่างเป็นระเบียบ
+* Frontend UI Development: * ปรับปรุงไฟล์ index.html ให้เพิ่มระบบการสมัครสมาชิก (Register) เพื่อทำงานร่วมกับ Auth Service ใหม่
+* พัฒนาไฟล์ profile.html ซึ่งเป็นหน้าที่สร้างขึ้นใหม่เพื่อดึงและแสดงข้อมูลผู้ใช้งานจาก User Service
+* Cloud Configuration: จัดการไฟล์ config.js เพื่อรวบรวม URL ของ Microservices ต่างๆ (Auth, Task, User) ที่รันอยู่บน Railway ช่วยให้การเรียกใช้ API จากฝั่ง Client เป็นไปอย่างเป็นระบบและแก้ไขได้ง่ายในจุดเดียว
+* Documentation: จัดทำเอกสารประกอบการส่งงาน ทั้งในส่วนของสถาปัตยกรรมระบบเบื้องต้นและขั้นตอนการทดสอบ เพื่อให้ทีมและอาจารย์ผู้ตรวจเข้าใจโครงสร้างของ Set 2
 
 ## ปัญหาที่พบและวิธีการแก้ไข
 
-* **ปัญหาเรื่อง Mixed Content & HTTPS:** ในช่วงแรกพยายามเชื่อมต่อ Frontend เข้ากับ API ผ่าน HTTP ปกติ แต่เมื่อตั้งค่า Nginx เป็น HTTPS ทำให้เบราว์เซอร์บล็อกการส่งข้อมูล (Mixed Content Error)
-    * **วิธีแก้ไข:** ปรับปรุงค่าตัวแปร `API` ใน JavaScript ให้เรียกผ่าน `https://localhost` ทั้งหมด และตรวจสอบว่า API Gateway (Nginx) ส่ง Header ที่จำเป็นกลับมาอย่างถูกต้อง
-* **ปัญหาการแสดงผล Log Dashboard:** การโหลดข้อมูล Log จำนวนมากทำให้หน้าจอค้างและ UI แสดงผลไม่ทัน
-    * **วิธีแก้ไข:** เพิ่มระบบกรองข้อมูล (Filter) ที่ฝั่ง Client-side เพื่อลดปริมาณการเรนเดอร์ และจัดการการแสดงผลแบบมีเงื่อนไข (Conditional Rendering) เพื่อให้ Dashboard ทำงานได้ราบรื่นขึ้น
+* **ปัญหาหน้าโปรไฟล์ไม่สามารถบันทึกข้อมูลได้: หลังจากพัฒนาหน้า profile.html พบว่าเมื่อกดบันทึกข้อมูล (Update Profile) ระบบไม่สามารถส่งข้อมูลไปบันทึกที่ User Service ได้
+    * **วิธีแก้ไข:** ได้ปรับปรุงไฟล์ config.js ให้ระบุ URL ของ User Service ให้ถูกต้อง และประสานงานกับเพื่อนในทีมเพื่อตรวจสอบว่า User Service บน Railway ได้อนุญาตให้มีการส่ง Method PUT กลับมาอย่างถูกต้องแล้ว
 
 ## สิ่งที่ได้เรียนรู้จากงานนี้
 
