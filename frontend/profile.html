@@ -3,69 +3,262 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>👤 Profile — Final Lab Set 2</title>
+  <title>Profile — Task Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0f172a; --surface: #1e293b; --surface2: #273448;
-      --border: #334155; --text: #e2e8f0; --muted: #94a3b8;
-      --blue: #3b82f6; --blue2: #2563eb; --purple: #a855f7; --radius: 10px;
+      --bg: #f7f3ff; --bg2: #f0f4ff;
+      --surface: rgba(255,255,255,.82);
+      --border: rgba(216,205,255,.28); --border2: rgba(216,205,255,.45);
+      --text: #3b2d6e; --text2: #5b4a9e;
+      --muted: #b8a9e0; --muted2: #c4b5fd;
+      --purple: #8b5cf6; --purple2: #7c3aed;
+      --green-soft: #6ee7b7; --radius: 12px;
     }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
-    #app-page { display: flex; height: 100vh; }
-    .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-    .sidebar-logo { padding: 1.25rem 1.5rem; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); }
-    .sidebar-nav { flex: 1; padding: .75rem; }
-    .nav-item { display: flex; align-items: center; gap: .75rem; padding: .65rem 1rem; border-radius: 8px; color: var(--muted); font-size: .9rem; text-decoration: none; margin-bottom: 2px; }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: rgba(59,130,246,.15); color: var(--blue); }
-    .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-    .page-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); background: var(--surface); }
-    .page-body { padding: 2rem; flex: 1; display: flex; justify-content: center; }
-    .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 600px; height: fit-content; }
-    .profile-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2rem; }
-    .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; }
-    .form-group { margin-bottom: 1.5rem; }
-    .form-group label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; }
-    .form-group input, .form-group textarea { width: 100%; padding: .75rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; }
-    .btn-submit { width: 100%; padding: .85rem; background: var(--blue); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; }
-    .toast { padding: .75rem 1.25rem; border-radius: 10px; font-size: .88rem; background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); animation: fadeIn .2s ease; margin-top: 10px; }
-    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse 60% 50% at 85% 0%, rgba(196,181,253,.3) 0%, transparent 65%),
+                  radial-gradient(ellipse 45% 45% at 5% 95%, rgba(165,180,252,.2) 0%, transparent 60%); }
+    #app-page { display: flex; height: 100vh; position: relative; z-index: 1; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 220px; flex-shrink: 0; background: linear-gradient(180deg,#fdfbff 0%,#f7f3ff 100%); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
+    .sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg,#c4b5fd,#a5b4fc,#93c5fd,#7dd3fc); }
+    .sidebar-logo { padding: 18px 15px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(145deg,#8b5cf6,#a78bfa); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(139,92,246,.24); flex-shrink: 0; }
+    .sidebar-logo-text { font-size: 13px; font-weight: 700; color: var(--text); }
+    .sidebar-logo-sub  { font-size: 9px; color: var(--muted2); margin-top: 1px; }
+    .sidebar-nav { flex: 1; padding: 11px 9px 0; }
+    .nav-section-label { font-size: 8.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #ddd6fe; padding: 0 7px; margin-bottom: 5px; }
+    .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 9px; color: var(--muted); font-size: 12.5px; font-weight: 500; text-decoration: none; transition: all .15s; margin-bottom: 2px; position: relative; }
+    .nav-item:hover { background: rgba(237,228,255,.4); color: var(--text2); }
+    .nav-item.active { background: rgba(139,92,246,.08); color: var(--purple2); font-weight: 600; box-shadow: inset 0 0 0 1px rgba(139,92,246,.12); }
+    .nav-item.active::after { content: ''; position: absolute; right: 0; top: 22%; bottom: 22%; width: 2.5px; border-radius: 2px 0 0 2px; background: linear-gradient(180deg,#c4b5fd,#8b5cf6); }
+    .nav-icon { width: 28px; height: 28px; border-radius: 7px; background: rgba(216,205,255,.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .nav-item.active .nav-icon { background: rgba(139,92,246,.12); }
+    .sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 8px 9px; background: rgba(237,228,255,.35); border: 1px solid var(--border); border-radius: 11px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#a78bfa,#c4b5fd); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .875rem; color: white; flex-shrink: 0; box-shadow: 0 2px 7px rgba(167,139,250,.3); }
+    .user-name { font-size: .8rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role-sm { font-size: .68rem; color: var(--muted); }
+    .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-soft); margin-left: auto; box-shadow: 0 0 5px rgba(110,231,183,.5); flex-shrink: 0; }
+
+    /* ── MAIN ── */
+    .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: linear-gradient(180deg,#f7f3ff,#f0f4ff); }
+    .main-content::-webkit-scrollbar { width: 4px; }
+    .main-content::-webkit-scrollbar-thumb { background: rgba(196,181,253,.3); border-radius: 4px; }
+    .page-header { padding: 13px 22px; background: rgba(255,255,255,.65); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .page-breadcrumb { font-size: 9.5px; color: #ddd6fe; margin-bottom: 2px; }
+    .page-title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .page-body { padding: 20px 22px; flex: 1; display: flex; gap: 18px; align-items: flex-start; }
+
+    /* ── PROFILE CARD ── */
+    .profile-card {
+      background: rgba(255,255,255,.82); backdrop-filter: blur(20px);
+      border: 1px solid var(--border); border-radius: 18px;
+      overflow: hidden; flex: 1; max-width: 560px;
+      box-shadow: 0 2px 16px rgba(139,92,246,.07);
+    }
+    .p-hero {
+      height: 80px;
+      background: linear-gradient(135deg,#6d28d9,#8b5cf6,#a78bfa,#c4b5fd);
+      position: relative; overflow: hidden;
+    }
+    .p-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 60%,rgba(255,255,255,.15),transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.1),transparent 40%); }
+    .p-hero::after  { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px); background-size:20px 20px; }
+    .p-body { padding: 0 22px 22px; }
+    .av-wrap { position: relative; display: inline-block; margin-top: -32px; margin-bottom: 10px; }
+    .av {
+      width: 62px; height: 62px; border-radius: 50%;
+      background: linear-gradient(135deg,#8b5cf6,#c4b5fd);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: white;
+      border: 3px solid #f7f3ff;
+      box-shadow: 0 0 0 1.5px rgba(196,181,253,.3), 0 5px 16px rgba(139,92,246,.2);
+      position: relative; z-index: 1;
+    }
+    .av-dot { position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--green-soft); border: 2.5px solid #f7f3ff; box-shadow: 0 0 5px rgba(110,231,183,.6); }
+    .p-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .p-sub  { font-size: 11.5px; color: var(--muted2); margin-bottom: 8px; }
+    .p-tag  { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; color: var(--purple); background: rgba(139,92,246,.08); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(216,205,255,.35); margin-bottom: 18px; }
+    .divider { height: 1px; background: linear-gradient(90deg,transparent,rgba(216,205,255,.35),transparent); margin-bottom: 16px; }
+
+    /* form */
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 5px; }
+    .label-bar { width: 3px; height: 12px; border-radius: 2px; background: linear-gradient(180deg,#c4b5fd,#8b5cf6); }
+    .form-group input,
+    .form-group textarea {
+      width: 100%; padding: .78rem 1rem;
+      background: rgba(237,228,255,.28);
+      border: 1.5px solid rgba(216,205,255,.25);
+      border-radius: 10px; color: var(--text); font-size: .9rem; outline: none; transition: all .2s;
+      font-family: inherit;
+    }
+    .form-group textarea { min-height: 96px; resize: none; }
+    .form-group input:focus,
+    .form-group textarea:focus { background: white; border-color: rgba(139,92,246,.4); box-shadow: 0 0 0 3px rgba(139,92,246,.09); }
+    .char-counter { font-size: 9px; color: #e0d9ff; text-align: right; margin-top: 3px; transition: color .2s; }
+    .char-counter.warn { color: var(--purple); }
+
+    .btn-save {
+      width: 100%; padding: .9rem 1.5rem;
+      background: linear-gradient(135deg,#7c3aed,#8b5cf6 50%,#a78bfa);
+      color: white; border: none; border-radius: 11px;
+      font-family: inherit; font-size: .9rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      box-shadow: 0 4px 16px rgba(124,58,237,.28), inset 0 1px 0 rgba(255,255,255,.15);
+      transition: all .25s; position: relative; overflow: hidden; margin-top: 4px;
+    }
+    .btn-save::after { content: ''; position: absolute; top: 0; left: -70%; width: 38%; height: 100%; background: linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent); transform: skewX(-15deg); animation: shimmer 2.8s ease-in-out infinite; }
+    @keyframes shimmer { 0%,100%{left:-70%} 55%{left:120%} }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,.34); }
+    .btn-save:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+    /* ── SIDE WIDGETS ── */
+    .side-col { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
+    .sw {
+      background: rgba(255,255,255,.78); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: 14px; padding: 14px;
+      position: relative; overflow: hidden;
+      animation: fadeUp .35s ease both;
+    }
+    .sw:nth-child(2) { animation-delay: .07s; }
+    .sw:nth-child(3) { animation-delay: .14s; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+    .sw::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,#c4b5fd,#a5b4fc,#93c5fd); opacity: .65; }
+    .sw-title { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #ddd6fe; margin-bottom: 10px; }
+    .sw-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(216,205,255,.12); }
+    .sw-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .sw-label { font-size: 11.5px; color: var(--muted); }
+    .sw-badge { font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(139,92,246,.08); color: var(--purple); border: 1px solid rgba(216,205,255,.3); }
+    .sw-value { font-size: 11.5px; font-weight: 600; color: var(--text); }
+    .act-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+    .act-ic  { width: 26px; height: 26px; border-radius: 7px; background: rgba(237,228,255,.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .act-t   { font-size: 11px; font-weight: 500; color: var(--text); }
+    .act-d   { font-size: 9.5px; color: var(--muted2); }
+    .tip     { display: flex; gap: 7px; padding: 4px 0; font-size: 11px; color: var(--muted); line-height: 1.45; }
+    .tip-ic  { color: var(--muted2); flex-shrink: 0; font-size: 10px; margin-top: 2px; }
+
+    /* ── TOAST ── */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 7px; }
+    .toast { padding: 8px 13px; border-radius: 12px; font-size: .84rem; font-weight: 500; display: flex; align-items: center; gap: 7px; backdrop-filter: blur(12px); animation: toastIn .3s cubic-bezier(.34,1.56,.64,1) both; box-shadow: 0 5px 18px rgba(0,0,0,.09); min-width: 180px; }
+    .toast.success { background: rgba(240,253,244,.97); color: #047857; border: 1px solid rgba(110,231,183,.3); }
+    .toast.error   { background: rgba(254,242,242,.97); color: #b91c1c; border: 1px solid rgba(220,38,38,.25); }
+    @keyframes toastIn { from{opacity:0;transform:translateX(16px) scale(.93)} to{opacity:1;transform:none} }
+    @keyframes pageIn  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+    .page-body { animation: pageIn .35s ease both; }
   </style>
 </head>
 <body>
-
 <div id="app-page">
+  <!-- SIDEBAR -->
   <nav class="sidebar">
-    <div class="sidebar-logo">📋 Task Board</div>
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="17" height="17" viewBox="0 0 32 32" fill="none">
+          <rect x="2"  y="2"  width="13" height="13" rx="3"   fill="white" opacity=".95"/>
+          <rect x="18" y="2"  width="12" height="12" rx="2.5" fill="white" opacity=".82"/>
+          <rect x="2"  y="18" width="12" height="12" rx="2.5" fill="white" opacity=".82"/>
+          <rect x="18" y="18" width="10" height="10" rx="2"   fill="white" opacity=".62"/>
+        </svg>
+      </div>
+      <div><div class="sidebar-logo-text">Task Board</div><div class="sidebar-logo-sub">Workspace</div></div>
+    </div>
     <div class="sidebar-nav">
-      <a href="index.html" class="nav-item"><span class="nav-icon">🏠</span> หน้าหลัก</a>
-      <a href="profile.html" class="nav-item active"><span class="nav-icon">👤</span> โปรไฟล์</a>
+      <div class="nav-section-label">เมนูหลัก</div>
+      <a href="index.html" class="nav-item">
+        <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        หน้าหลัก
+      </a>
+      <a href="profile.html" class="nav-item active">
+        <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.1"/><path d="M2 13C2 10.5 4.24 8.5 7 8.5C9.76 8.5 12 10.5 12 13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+        โปรไฟล์
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar" id="sidebar-initial">?</div>
+        <div style="flex:1;min-width:0;">
+          <div class="user-name" id="sidebar-name">กำลังโหลด...</div>
+          <div class="user-role-sm">Member</div>
+        </div>
+        <div class="online-dot"></div>
+      </div>
     </div>
   </nav>
 
+  <!-- MAIN -->
   <div class="main-content">
-    <div class="page-header"><h1 style="font-size: 1.3rem;">👤 แก้ไขข้อมูลส่วนตัว</h1></div>
+    <div class="page-header">
+      <div>
+        <div class="page-breadcrumb">Task Board › โปรไฟล์</div>
+        <div class="page-title">
+          <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="#8b5cf6" stroke-width="1.3"/><path d="M2 13C2 10.5 4.24 8.5 7 8.5C9.76 8.5 12 10.5 12 13" stroke="#8b5cf6" stroke-width="1.3" stroke-linecap="round"/></svg>
+          ข้อมูลส่วนตัว
+        </div>
+      </div>
+      <span style="font-size:10px;font-weight:600;color:#8b5cf6;background:rgba(139,92,246,.07);padding:4px 10px;border-radius:20px;border:1px solid rgba(216,205,255,.3);">✦ Member</span>
+    </div>
+
     <div class="page-body">
+      <!-- PROFILE CARD -->
       <div class="profile-card">
-        <div class="profile-header">
-          <div class="profile-avatar" id="avatar-initial">?</div>
-          <div>
-            <h2 id="header-name">กำลังโหลด...</h2>
-            <p style="color: var(--muted); font-size: 0.9rem;">จัดการข้อมูลส่วนตัวของคุณ</p>
+        <div class="p-hero"></div>
+        <div class="p-body">
+          <div class="av-wrap">
+            <div class="av" id="avatar-initial">?<div class="av-dot"></div></div>
+          </div>
+          <div class="p-name" id="header-name">กำลังโหลด...</div>
+          <div class="p-sub">จัดการข้อมูลส่วนตัวของคุณ</div>
+          <div class="p-tag">✦ Member</div>
+          <div class="divider"></div>
+
+          <div class="form-group">
+            <label><span class="label-bar"></span>ชื่อที่แสดง (Display Name)</label>
+            <input type="text" id="display_name" placeholder="ระบุชื่อของคุณ" maxlength="40" oninput="updateCounter(this,'cnt-name',40)">
+          </div>
+          <div class="form-group">
+            <label><span class="label-bar"></span>คำอธิบายตัวเอง (Bio)</label>
+            <div style="position:relative;">
+              <textarea id="bio" placeholder="บอกเล่าเรื่องราวของคุณสักนิด..." maxlength="160" oninput="updateCounter(this,'cnt-bio',160)"></textarea>
+              <span class="char-counter" id="cnt-bio">160</span>
+            </div>
+          </div>
+
+          <button class="btn-save" id="save-btn" onclick="updateProfile()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2H10L12 4V12H2V2Z" stroke="white" stroke-width="1.3" stroke-linejoin="round"/><rect x="4" y="8" width="6" height="4" rx=".5" stroke="white" stroke-width="1.2"/><rect x="4" y="2" width="4" height="3" rx=".5" stroke="white" stroke-width="1.2"/></svg>
+            <span id="btn-text">บันทึกการเปลี่ยนแปลง</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SIDE WIDGETS -->
+      <div class="side-col">
+        <div class="sw">
+          <div class="sw-title">สถานะบัญชี</div>
+          <div class="sw-row"><span class="sw-label">สถานะ</span><span class="sw-badge">Active</span></div>
+          <div class="sw-row"><span class="sw-label">สิทธิ์</span><span class="sw-value">Member</span></div>
+        </div>
+        <div class="sw">
+          <div class="sw-title">กิจกรรมล่าสุด</div>
+          <div class="act-row">
+            <div class="act-ic"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#c4b5fd" stroke-width="1.1"/><path d="M3.5 6L5.5 8L8.5 4" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><div class="act-t">อัปเดต Task</div><div class="act-d">2 ชม. ที่แล้ว</div></div>
+          </div>
+          <div class="act-row">
+            <div class="act-ic"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2H10V8H7L4.5 10.5V8H2V2Z" stroke="#c4b5fd" stroke-width="1.1" stroke-linejoin="round"/></svg></div>
+            <div><div class="act-t">แสดงความคิดเห็น</div><div class="act-d">เมื่อวาน</div></div>
           </div>
         </div>
-        <div class="form-group">
-          <label>ชื่อที่แสดง (Name)</label>
-          <input type="text" id="display_name" placeholder="ระบุชื่อของคุณ">
+        <div class="sw">
+          <div class="sw-title">เคล็ดลับ</div>
+          <div class="tip"><span class="tip-ic">✦</span>ชื่อที่ดีช่วยให้ทีมจดจำคุณได้ง่ายขึ้น</div>
+          <div class="tip"><span class="tip-ic">✦</span>เขียน Bio สั้นๆ แนะนำตัวกับเพื่อนร่วมทีม</div>
         </div>
-        <div class="form-group">
-          <label>คำอธิบายตัวเอง (Bio)</label>
-          <textarea id="bio" placeholder="บอกเล่าเรื่องราวของคุณสักนิด..."></textarea>
-        </div>
-        <button class="btn-submit" id="save-btn" onclick="updateProfile()">💾 บันทึกการเปลี่ยนแปลง</button>
       </div>
     </div>
   </div>
@@ -75,84 +268,66 @@
 
 <script src="config.js"></script>
 <script>
-  const USER_API = window.APP_CONFIG.USER_URL; // ตอนนี้จะเป็น .../api แล้ว
-  const token = localStorage.getItem('jwt_token');
+const USER_API = window.APP_CONFIG.USER_URL;
+const token    = localStorage.getItem('jwt_token');
+if (!token) window.location.href = 'index.html';
 
-  if (!token) window.location.href = 'index.html';
-
-  async function loadProfile() {
-    try {
-      // เรียกไปที่ .../api/users/me
-      const res = await fetch(`${USER_API}/users/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      
-      if (res.ok && data.user) {
-        console.log("🔍 ข้อมูลปัจจุบัน:", data);
-        const p = data.user.profile || {};
-        document.getElementById('display_name').value = p.display_name || '';
-        document.getElementById('bio').value = p.bio || '';
-        
-        const headerName = p.display_name || data.user.username || 'User';
-        document.getElementById('header-name').textContent = headerName;
-        document.getElementById('avatar-initial').textContent = headerName.charAt(0).toUpperCase();
-      }
-    } catch (err) { console.error("Load Error:", err); }
-  }
-
-async function updateProfile() {
-  const saveBtn = document.getElementById('save-btn');
-  const nameVal = document.getElementById('display_name').value;
-  const bioVal = document.getElementById('bio').value;
-
-  saveBtn.disabled = true;
-  saveBtn.textContent = '⏳ กำลังบันทึก...';
-
-  // 🛠️ ปรับตรงนี้: ส่งเป็น Object แบนๆ ตามที่ Backend แกะค่า { display_name, bio }
-  const payload = {
-    display_name: nameVal,
-    bio: bioVal,
-    avatar_url: "" 
-  };
-
-  try {
-    const res = await fetch(`${USER_API}/users/me`, {
-      method: 'PUT',
-      headers: { 
-        'Authorization': `Bearer ${token}`, 
-        'Content-Type': 'application/json' 
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await res.json();
-    console.log("✅ ผลลัพธ์หลังกดบันทึก:", result);
-
-    if (res.ok) {
-      showToast('บันทึกสำเร็จ!');
-      loadProfile(); 
-    } else {
-      alert('บันทึกไม่สำเร็จ: ' + (result.error || 'Server Error'));
-    }
-  } catch (err) {
-    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = '💾 บันทึกการเปลี่ยนแปลง';
-  }
+function updateCounter(el, id, max) {
+  const rem = max - el.value.length;
+  const c   = document.getElementById(id);
+  if (!c) return;
+  c.textContent = rem;
+  c.classList.toggle('warn', rem < 20);
 }
 
-  function showToast(msg) {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = '✅ ' + msg;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
+async function loadProfile() {
+  try {
+    const res = await fetch(`${USER_API}/api/users/me`, { 
+      headers: { 'Authorization': `Bearer ${token}` } 
+    });
 
-  loadProfile();
+    if (res.status === 401) {
+       alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+       window.location.href = 'login.html'; 
+       return;
+    }
+
+    // --- เริ่มวางโค้ดใหม่ตรงนี้ ---
+    const data = await res.json();
+    console.log("Profile Data:", data); 
+
+    const userData = data.user || data; 
+    
+    if (res.ok && userData) {
+      const p = userData.profile || {};
+      
+      const dispInput = document.getElementById('display_name');
+      const bioInput = document.getElementById('bio');
+      if(dispInput) dispInput.value = p.display_name || '';
+      if(bioInput) bioInput.value = p.bio || '';
+      
+      const name = p.display_name || userData.username || 'User';
+      const initial = name.charAt(0).toUpperCase();
+      
+      document.getElementById('header-name').textContent = name;
+      document.getElementById('sidebar-name').textContent = name;
+      
+      const avatarContainer = document.getElementById('avatar-initial');
+      if (avatarContainer) {
+          avatarContainer.innerHTML = `${initial}<div class="av-dot"></div>`;
+      }
+      
+      const sideInitial = document.getElementById('sidebar-initial');
+      if (sideInitial) sideInitial.textContent = initial;
+    }
+    // --- สิ้นสุดการวางโค้ดใหม่ ---
+
+  } catch(err) { 
+    console.error("Load Profile Error:", err);
+    document.getElementById('header-name').textContent = "เกิดข้อผิดพลาดในการโหลด";
+  }
+}
+loadProfile();
 </script>
 </body>
 </html>

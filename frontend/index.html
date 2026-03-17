@@ -4,623 +4,473 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="engse207-frontend-health" content="frontend-ok">
-  <title>🔐  Task Board — Final Lab Set 2</title>
+  <title>Task Board — Final Lab Set 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ... (CSS ทั้งหมดรักษาไว้ตามต้นฉบับ) ... */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:       #0f172a;
-      --surface:  #1e293b;
-      --surface2: #273448;
-      --border:   #334155;
-      --text:     #e2e8f0;
-      --muted:    #94a3b8;
-      --blue:     #3b82f6;
-      --blue2:    #2563eb;
-      --green:    #22c55e;
-      --yellow:   #f59e0b;
-      --red:      #ef4444;
-      --purple:   #a855f7;
-      --radius:   10px;
+      --bg: #f7f3ff; --bg2: #f0f4ff;
+      --surface: rgba(255,255,255,.82); --surface2: rgba(243,238,255,.5);
+      --border: rgba(216,205,255,.28); --border2: rgba(216,205,255,.45);
+      --text: #3b2d6e; --text2: #5b4a9e;
+      --muted: #b8a9e0; --muted2: #c4b5fd;
+      --purple: #8b5cf6; --purple2: #7c3aed;
+      --green-soft: #6ee7b7; --radius: 12px;
     }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg); color: var(--text);
-      min-height: 100vh; line-height: 1.5;
-    }
-    button { cursor: pointer; font-family: inherit; transition: all .15s; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse 60% 50% at 85% 0%, rgba(196,181,253,.3) 0%, transparent 65%),
+                  radial-gradient(ellipse 45% 45% at 5% 95%, rgba(165,180,252,.2) 0%, transparent 60%); }
+    button { cursor: pointer; font-family: inherit; }
     input, select, textarea { font-family: inherit; }
     .hidden { display: none !important; }
-    #auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; }
-    .auth-box { background: var(--surface); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 420px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-    .auth-logo { font-size: 2.5rem; text-align: center; margin-bottom: .5rem; }
-    .auth-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: .25rem; }
-    .auth-subtitle { text-align: center; color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
-    .auth-tabs { display: flex; background: var(--bg); border-radius: 8px; padding: 4px; margin-bottom: 1.5rem; gap: 4px; }
-    .auth-tab { flex: 1; padding: .6rem; border: none; border-radius: 6px; background: transparent; color: var(--muted); font-size: .9rem; font-weight: 500; }
-    .auth-tab.active { background: var(--blue); color: white; }
+
+    /* ── AUTH ── */
+    #auth-page { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 1.5rem;
+      background: linear-gradient(155deg, #f2eeff 0%, #ece4ff 35%, #e6eeff 65%, #edf4ff 100%); overflow: hidden; }
+    #auth-page::before { content: ''; position: absolute; width: 280px; height: 240px; border-radius: 50%;
+      background: rgba(196,181,253,.22); filter: blur(52px); top: -80px; right: -60px; pointer-events: none; }
+    #auth-page::after  { content: ''; position: absolute; width: 200px; height: 180px; border-radius: 50%;
+      background: rgba(165,180,252,.16); filter: blur(48px); bottom: 60px; left: -50px; pointer-events: none; }
+    .auth-wave { position: absolute; bottom: 0; left: 0; right: 0; pointer-events: none; z-index: 0; }
+    .auth-curve { position: absolute; pointer-events: none; z-index: 0; opacity: .46; }
+
+    .auth-box { background: rgba(255,255,255,.88); backdrop-filter: blur(28px); border-radius: 22px;
+      padding: 2.2rem 1.75rem; width: 100%; max-width: 400px;
+      border: 1px solid rgba(216,205,255,.4);
+      box-shadow: 0 14px 44px rgba(109,40,217,.09), 0 2px 8px rgba(0,0,0,.04);
+      position: relative; z-index: 2; }
+    .auth-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3.5px;
+      border-radius: 22px 22px 0 0; background: linear-gradient(90deg, #c4b5fd, #a5b4fc, #93c5fd, #7dd3fc); }
+    .auth-logo { width: 56px; height: 56px; border-radius: 16px;
+      background: linear-gradient(145deg, #8b5cf6, #a78bfa, #c4b5fd);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;
+      box-shadow: 0 6px 22px rgba(139,92,246,.3), inset 0 1px 0 rgba(255,255,255,.25); }
+    .auth-title    { text-align: center; font-size: 1.45rem; font-weight: 700; color: var(--text); margin-bottom: .25rem; }
+    .auth-subtitle { text-align: center; color: var(--muted); font-size: .875rem; margin-bottom: 1.6rem; }
+    .auth-tabs { display: flex; background: rgba(237,228,255,.4); border: 1.5px solid rgba(216,205,255,.3);
+      border-radius: 11px; padding: 3px; gap: 3px; margin-bottom: 1.4rem; }
+    .auth-tab { flex: 1; padding: .55rem; border: none; border-radius: 9px; font-size: .875rem;
+      font-weight: 500; transition: all .2s; background: transparent; color: var(--muted); }
+    .auth-tab.active { background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: white; font-weight: 700;
+      box-shadow: 0 2px 10px rgba(124,58,237,.28); }
     .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; color: var(--muted); font-size: .85rem; margin-bottom: .4rem; font-weight: 500; }
-    .form-group input { width: 100%; padding: .75rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; transition: border-color .2s; }
-    .form-group input:focus { outline: none; border-color: var(--blue); }
-    .btn-primary { width: 100%; padding: .85rem; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; margin-top: .5rem; }
-    .btn-primary:hover { background: var(--blue2); transform: translateY(-1px); }
-    .auth-hint { background: var(--bg); border-radius: 8px; padding: 1rem; margin-top: 1.2rem; font-size: .8rem; color: var(--muted); border: 1px solid var(--border); }
-    .auth-hint strong { color: var(--text); }
-    .auth-msg { padding: .7rem 1rem; border-radius: 8px; margin-top: 1rem; font-size: .9rem; text-align: center; }
-    .auth-msg.error { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
-    .auth-msg.success { background: rgba(34,197,94,.15); color: #86efac; border: 1px solid rgba(34,197,94,.3); }
-    #app-page { display: flex; height: 100vh; }
-    .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-    .sidebar-logo { padding: 1.25rem 1.5rem; font-size: 1.1rem; font-weight: 700; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .6rem; }
-    .sidebar-nav { flex: 1; padding: .75rem; }
-    .nav-item { display: flex; align-items: center; gap: .75rem; padding: .65rem 1rem; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: .9rem; font-weight: 500; border: none; background: none; width: 100%; text-align: left; transition: all .15s; margin-bottom: 2px; }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: rgba(59,130,246,.15); color: var(--blue); }
-    .nav-item .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
-    .nav-item .badge-count { margin-left: auto; background: var(--blue); color: white; font-size: .7rem; padding: 2px 7px; border-radius: 999px; font-weight: 700; }
-    .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border); }
-    .user-chip { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem; background: var(--bg); border-radius: 8px; }
-    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+    .form-group label { display: block; color: var(--muted2); font-size: .75rem; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase; margin-bottom: .4rem; }
+    .form-group input { width: 100%; padding: .75rem 1rem; background: rgba(237,228,255,.2);
+      border: 1.5px solid rgba(216,205,255,.3); border-radius: 10px; color: var(--text);
+      font-size: .95rem; transition: all .2s; outline: none; }
+    .form-group input:focus { background: white; border-color: rgba(139,92,246,.4); box-shadow: 0 0 0 3px rgba(139,92,246,.1); }
+    .btn-primary { width: 100%; padding: .875rem;
+      background: linear-gradient(135deg, #7c3aed, #8b5cf6 50%, #a78bfa);
+      color: white; border: none; border-radius: 12px; font-size: .95rem; font-weight: 700;
+      margin-top: .4rem; transition: all .2s;
+      box-shadow: 0 4px 18px rgba(124,58,237,.3), inset 0 1px 0 rgba(255,255,255,.18);
+      position: relative; overflow: hidden; }
+    .btn-primary::after { content: ''; position: absolute; top: 0; left: -70%; width: 38%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: skewX(-15deg); animation: shimmer 2.8s ease-in-out infinite; }
+    @keyframes shimmer { 0%,100%{left:-70%} 55%{left:120%} }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,.36); }
+    .auth-msg { padding: .65rem 1rem; border-radius: 10px; margin-top: 1rem; font-size: .875rem; text-align: center; font-weight: 500; }
+    .auth-msg.error   { background: rgba(220,38,38,.07); color: #b91c1c; border: 1px solid rgba(220,38,38,.2); }
+    .auth-msg.success { background: rgba(5,150,105,.07); color: #047857; border: 1px solid rgba(5,150,105,.18); }
+
+    /* ── APP ── */
+    #app-page { display: flex; height: 100vh; position: relative; z-index: 1; }
+    .sidebar { width: 220px; flex-shrink: 0;
+      background: linear-gradient(180deg, #fdfbff 0%, #f7f3ff 100%);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
+    .sidebar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #c4b5fd, #a5b4fc, #93c5fd, #7dd3fc); }
+    .sidebar-logo { padding: 18px 15px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo-mark { width: 32px; height: 32px; border-radius: 9px;
+      background: linear-gradient(145deg, #8b5cf6, #a78bfa);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(139,92,246,.24); flex-shrink: 0; }
+    .sidebar-logo-text { font-size: 13px; font-weight: 700; color: var(--text); }
+    .sidebar-logo-sub  { font-size: 9px; color: var(--muted2); margin-top: 1px; }
+    .sidebar-nav { flex: 1; padding: 11px 9px 0; }
+    .nav-section-label { font-size: 8.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: #ddd6fe; padding: 0 7px; margin-bottom: 5px; }
+    .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 9px;
+      cursor: pointer; color: var(--muted); font-size: 12.5px; font-weight: 500;
+      border: none; background: none; width: 100%; text-align: left;
+      transition: all .15s; margin-bottom: 2px; position: relative; text-decoration: none; }
+    .nav-item:hover { background: rgba(237,228,255,.4); color: var(--text2); }
+    .nav-item.active { background: rgba(139,92,246,.08); color: var(--purple2); font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(139,92,246,.12); }
+    .nav-item.active::after { content: ''; position: absolute; right: 0; top: 22%; bottom: 22%;
+      width: 2.5px; border-radius: 2px 0 0 2px; background: linear-gradient(180deg, #c4b5fd, #8b5cf6); }
+    .nav-icon { width: 28px; height: 28px; border-radius: 7px; background: rgba(216,205,255,.2);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .nav-item.active .nav-icon { background: rgba(139,92,246,.12); }
+    .badge-count { margin-left: auto; background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      color: white; font-size: .62rem; padding: 1px 6px; border-radius: 999px; font-weight: 700; }
+    .sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 8px 9px;
+      background: rgba(237,228,255,.35); border: 1px solid var(--border); border-radius: 11px; }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .875rem; color: white; flex-shrink: 0;
+      box-shadow: 0 2px 7px rgba(167,139,250,.3); }
     .user-info-small { flex: 1; min-width: 0; }
-    .user-info-small .name { font-size: .85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-info-small .role-badge { font-size: .7rem; color: white; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
-    .role-admin { background: var(--purple); }
-    .role-member { background: var(--blue); }
+    .user-info-small .name { font-size: .8rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .role-badge { font-size: .65rem; color: white; padding: 1px 7px; border-radius: 20px; font-weight: 600; }
+    .role-admin  { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
+    .role-member { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
     .role-viewer { background: var(--muted); }
-    .btn-logout { background: none; border: none; color: var(--muted); padding: 4px; font-size: .9rem; border-radius: 6px; }
-    .btn-logout:hover { color: var(--red); background: rgba(239,68,68,.1); }
-    .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-    .page-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
-    .page-title { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; }
-    .page-body { padding: 2rem; flex: 1; }
-    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; }
-    .stat-icon { font-size: 1.6rem; }
-    .stat-value { font-size: 1.6rem; font-weight: 700; }
-    .stat-label { font-size: .78rem; color: var(--muted); }
-    .toolbar { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
-    .filter-btn { padding: .5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: .85rem; font-weight: 500; }
-    .filter-btn.active { border-color: var(--blue); background: rgba(59,130,246,.15); color: var(--blue); }
-    .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .online-dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--green-soft); margin-left: auto; box-shadow: 0 0 5px rgba(110,231,183,.5); flex-shrink: 0; }
+    .btn-logout  { background: none; border: none; color: var(--muted); padding: 5px; border-radius: 6px; transition: all .15s; display: flex; align-items: center; }
+    .btn-logout:hover { color: #dc2626; background: rgba(220,38,38,.08); }
+
+    .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: linear-gradient(180deg, #f7f3ff, #f0f4ff); }
+    .main-content::-webkit-scrollbar { width: 4px; }
+    .main-content::-webkit-scrollbar-thumb { background: rgba(196,181,253,.3); border-radius: 4px; }
+    .page-header { padding: 13px 22px; background: rgba(255,255,255,.65); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10; }
+    .page-breadcrumb { font-size: 9.5px; color: #ddd6fe; margin-bottom: 2px; }
+    .page-title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .page-body { padding: 18px 20px; flex: 1; }
+
+    /* stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+    .stat-card { border-radius: var(--radius); padding: 12px 14px; border: 1px solid; position: relative; overflow: hidden; }
+    .stat-card.c-all  { background: linear-gradient(135deg,#f3eeff,#ede9fe); border-color: rgba(216,205,255,.45); }
+    .stat-card.c-todo { background: linear-gradient(135deg,#f8fafc,#f1f5f9); border-color: rgba(203,213,225,.4); }
+    .stat-card.c-prog { background: linear-gradient(135deg,#fffdf0,#fef9e7); border-color: rgba(253,230,138,.4); }
+    .stat-card.c-done { background: linear-gradient(135deg,#f4fdf8,#e8faf0); border-color: rgba(167,243,208,.4); }
+    .stat-icon-wrap { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .c-all .stat-icon-wrap { background: rgba(139,92,246,.1); } .c-todo .stat-icon-wrap { background: rgba(148,163,184,.12); }
+    .c-prog .stat-icon-wrap { background: rgba(251,191,36,.12); } .c-done .stat-icon-wrap { background: rgba(52,211,153,.12); }
+    .stat-value { font-size: 1.55rem; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+    .c-all .stat-value{color:#6d28d9;} .c-todo .stat-value{color:#64748b;} .c-prog .stat-value{color:#a16207;} .c-done .stat-value{color:#047857;}
+    .stat-label { font-size: .75rem; font-weight: 600; }
+    .c-all .stat-label{color:#a78bfa;} .c-todo .stat-label{color:#94a3b8;} .c-prog .stat-label{color:#ca8a04;} .c-done .stat-label{color:#10b981;}
+
+    /* toolbar */
+    .toolbar { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .filter-btn { padding: .42rem 1rem; border-radius: 20px; border: 1.5px solid rgba(216,205,255,.35);
+      background: rgba(255,255,255,.7); color: var(--muted); font-size: .82rem; font-weight: 500; transition: all .15s; }
+    .filter-btn.active { background: linear-gradient(135deg,#7c3aed,#a78bfa); color: white;
+      border-color: transparent; font-weight: 700; box-shadow: 0 2px 10px rgba(124,58,237,.24); }
+    .filter-btn:hover:not(.active) { border-color: rgba(216,205,255,.6); color: var(--text2); }
     .spacer { flex: 1; }
-    .btn-add { padding: .55rem 1.2rem; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: .9rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
-    .btn-add:hover { background: var(--blue2); transform: translateY(-1px); }
-    .task-list { display: flex; flex-direction: column; gap: .75rem; }
-    .task-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; transition: border-color .2s, transform .15s; }
-    .task-card:hover { transform: translateX(2px); }
-    .task-card.status-TODO { border-left-color: #64748b; }
-    .task-card.status-IN_PROGRESS{ border-left-color: var(--yellow); }
-    .task-card.status-DONE { border-left-color: var(--green); }
-    .task-header { display: flex; align-items: flex-start; gap: .75rem; }
-    .task-header .title { flex: 1; font-weight: 600; font-size: .95rem; }
-    .task-header .title.done { text-decoration: line-through; color: var(--muted); }
-    .task-meta { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
-    .chip { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 5px; font-size: .72rem; font-weight: 600; }
-    .chip-todo { background: rgba(100,116,139,.2); color: #94a3b8; }
-    .chip-inprogress { background: rgba(245,158,11,.2); color: #fbbf24; }
-    .chip-done { background: rgba(34,197,94,.2); color: #4ade80; }
-    .chip-low { background: rgba(100,116,139,.15); color: #94a3b8; }
-    .chip-medium { background: rgba(59,130,246,.15); color: #7dd3fc; }
-    .chip-high { background: rgba(239,68,68,.2); color: #fca5a5; }
-    .chip-owner { background: rgba(168,85,247,.15); color: #c4b5fd; }
-    .task-actions { display: flex; gap: .4rem; margin-left: auto; }
-    .btn-icon { padding: .3rem .5rem; border-radius: 6px; border: none; background: transparent; color: var(--muted); font-size: .85rem; }
-    .btn-icon:hover { background: var(--surface2); }
-    .btn-icon.edit:hover { color: var(--blue); }
-    .btn-icon.delete:hover { color: var(--red); background: rgba(239,68,68,.1); }
-    .task-desc { font-size: .82rem; color: var(--muted); margin-top: .4rem; }
-    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); font-size: 1rem; }
-    .empty-state .emoji { font-size: 3rem; margin-bottom: 1rem; }
-    .status-select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 2px 6px; font-size: .78rem; cursor: pointer; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
-    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 500px; box-shadow: 0 25px 50px rgba(0,0,0,.6); max-height: 90vh; overflow-y: auto; }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
-    .modal-header h3 { font-size: 1.1rem; font-weight: 700; }
-    .btn-close { background: none; border: none; color: var(--muted); font-size: 1.2rem; padding: .2rem .4rem; border-radius: 6px; }
-    .btn-close:hover { background: var(--surface2); color: var(--text); }
-    .modal-body { padding: 1.5rem; }
-    .modal-body .form-group { margin-bottom: 1.1rem; }
-    .modal-body input, .modal-body select, .modal-body textarea { width: 100%; padding: .7rem 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: .9rem; }
-    .modal-body textarea { min-height: 80px; resize: vertical; }
-    .modal-body select option { background: var(--surface); }
-    .modal-footer { display: flex; gap: .75rem; justify-content: flex-end; padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
-    .btn-secondary { padding: .6rem 1.2rem; background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; }
-    .btn-danger { padding: .6rem 1.2rem; background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); border-radius: 8px; font-size: .9rem; }
-    .btn-submit { padding: .6rem 1.4rem; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: .9rem; font-weight: 600; }
-    .btn-submit:hover { background: var(--blue2); }
-    .user-table { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    .user-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr; padding: .9rem 1.25rem; border-bottom: 1px solid var(--border); align-items: center; font-size: .88rem; }
-    .user-row.header { background: var(--surface2); color: var(--muted); font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .btn-add { padding: .5rem 1.1rem; background: linear-gradient(135deg,#7c3aed,#a78bfa); color: white;
+      border: none; border-radius: 9px; font-size: .855rem; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 3px 10px rgba(124,58,237,.24); transition: all .2s; }
+    .btn-add:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(124,58,237,.3); }
+
+    /* task cards */
+    .task-list { display: flex; flex-direction: column; gap: 7px; }
+    .task-card { background: rgba(255,255,255,.82); border-radius: var(--radius); padding: 12px 14px;
+      border: 1px solid var(--border); box-shadow: 0 1px 6px rgba(139,92,246,.04);
+      position: relative; overflow: hidden; transition: all .2s; }
+    .task-card:hover { transform: translateX(2px); box-shadow: 0 3px 14px rgba(139,92,246,.08); }
+    .task-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3.5px; border-radius: 12px 0 0 12px; }
+    .task-card.status-TODO::before        { background: linear-gradient(180deg,#c4b5fd,#ddd6fe); }
+    .task-card.status-IN_PROGRESS::before { background: linear-gradient(180deg,#fde68a,#fef3c7); }
+    .task-card.status-DONE::before        { background: linear-gradient(180deg,#6ee7b7,#a7f3d0); }
+    .task-header { display: flex; align-items: flex-start; gap: 8px; }
+    .task-header .title { flex: 1; font-weight: 600; font-size: .9rem; color: var(--text); }
+    .task-header .title.done { text-decoration: line-through; color: var(--muted2); }
+    .task-desc { font-size: .78rem; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .task-meta { display: flex; align-items: center; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+    .chip-todo       { background:#f3eeff; color:#7c3aed; border:1px solid #ddd6fe; }
+    .chip-inprogress { background:#fffdf0; color:#b45309; border:1px solid #fde68a; }
+    .chip-done       { background:#f0fdf8; color:#047857; border:1px solid #a7f3d0; }
+    .chip-low        { background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; }
+    .chip-medium     { background:#f3eeff; color:#6d28d9; border:1px solid #ddd6fe; }
+    .chip-high       { background:#fff4f4; color:#b91c1c; border:1px solid #fecdd3; }
+    .chip-owner      { background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-size:.66rem; }
+    .task-actions { display: flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
+    .btn-icon { padding: 4px 6px; border-radius: 6px; border: none; background: transparent; color: #ddd6fe; transition: all .15s; display: flex; align-items: center; justify-content: center; }
+    .btn-icon:hover        { background: rgba(237,228,255,.5); color: var(--text2); }
+    .btn-icon.edit:hover   { color: var(--purple); background: rgba(139,92,246,.08); }
+    .btn-icon.delete:hover { color: #dc2626; background: rgba(220,38,38,.08); }
+    .status-select { background: rgba(243,238,255,.6); border: 1.5px solid rgba(216,205,255,.35);
+      color: var(--purple2); border-radius: 20px; padding: 2px 8px; font-size: .72rem;
+      cursor: pointer; font-family: inherit; font-weight: 600; outline: none; }
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .empty-state .empty-icon { margin-bottom: 1rem; opacity: .45; }
+
+    /* users */
+    .user-table { background: rgba(255,255,255,.78); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 12px rgba(139,92,246,.05); }
+    .user-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr; padding: 11px 16px; border-bottom: 1px solid var(--border); align-items: center; font-size: .855rem; transition: background .15s; }
+    .user-row.header { background: rgba(237,228,255,.3); color: var(--muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
     .user-row:last-child { border-bottom: none; }
-    .user-row:not(.header):hover { background: var(--surface2); }
-    .user-email { color: var(--muted); font-size: .82rem; }
-    .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; max-width: 600px; }
-    .profile-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; }
-    .profile-info h2 { font-size: 1.25rem; }
-    .profile-info p { color: var(--muted); font-size: .9rem; margin-top: 2px; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .info-item label { display: block; font-size: .75rem; color: var(--muted); margin-bottom: .2rem; text-transform: uppercase; letter-spacing: .06em; }
-    .info-item p { font-size: .95rem; font-weight: 500; }
-    .jwt-panel { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem; }
-    .jwt-panel h3 { font-size: .9rem; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: .4rem; }
-    .jwt-parts { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .jwt-part { padding: 4px 8px; border-radius: 5px; font-family: monospace; font-size: .7rem; word-break: break-all; }
-    .jwt-header-part { background: rgba(239,68,68,.2); color: #fca5a5; }
-    .jwt-payload-part { background: rgba(168,85,247,.2); color: #c4b5fd; }
-    .jwt-sig-part { background: rgba(59,130,246,.2); color: #93c5fd; }
-    .jwt-decoded { font-size: .8rem; }
-    .jwt-decoded pre { background: var(--surface); padding: .75rem 1rem; border-radius: 8px; overflow-x: auto; color: var(--text); border: 1px solid var(--border); }
-    .token-exp { margin-top: .75rem; font-size: .82rem; }
-    .exp-ok { color: var(--green); }
-    .exp-bad { color: var(--red); }
-    .logs-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1rem; padding: .5rem 1rem; background: rgba(168,85,247,.15); color: #c4b5fd; border: 1px solid rgba(168,85,247,.3); border-radius: 8px; font-size: .85rem; text-decoration: none; font-weight: 500; }
-    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: .5rem; }
-    .toast { padding: .75rem 1.25rem; border-radius: 10px; font-size: .88rem; font-weight: 500; animation: fadeIn .2s ease; box-shadow: 0 8px 25px rgba(0,0,0,.3); max-width: 320px; }
-    .toast.success { background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
-    .toast.error { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
-    .toast.info { background: rgba(59,130,246,.15); color: #93c5fd; border: 1px solid rgba(59,130,246,.3); }
-    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .confirm-msg { text-align: center; padding: .5rem 0; }
-    .confirm-msg .warn-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    .user-row:not(.header):hover { background: rgba(237,228,255,.2); }
+    .user-email { color: var(--muted); font-size: .78rem; }
+
+    /* modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(59,45,110,.2); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+    .modal { background: rgba(255,255,255,.97); border: 1px solid rgba(216,205,255,.38); border-radius: 18px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 20px 54px rgba(109,40,217,.16); max-height: 90vh; overflow-y: auto;
+      position: relative; }
+    .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3.5px;
+      background: linear-gradient(90deg,#c4b5fd,#a5b4fc,#93c5fd); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .btn-close { background: none; border: none; color: var(--muted2); padding: 4px 6px; border-radius: 7px; transition: all .15s; display: flex; align-items: center; }
+    .btn-close:hover { background: rgba(220,38,38,.08); color: #dc2626; }
+    .modal-body { padding: 0 20px 16px; }
+    .modal-body .form-group { margin-bottom: 12px; }
+    .modal-body input, .modal-body select, .modal-body textarea { width: 100%; padding: .68rem 1rem;
+      background: rgba(237,228,255,.28); border: 1.5px solid rgba(216,205,255,.28);
+      border-radius: 10px; color: var(--text); font-size: .9rem; outline: none; transition: all .2s; }
+    .modal-body input:focus, .modal-body select:focus, .modal-body textarea:focus { background: white; border-color: rgba(139,92,246,.38); box-shadow: 0 0 0 3px rgba(139,92,246,.09); }
+    .modal-body textarea { min-height: 80px; resize: vertical; }
+    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--border); }
+    .btn-secondary { padding: .55rem 1.1rem; background: rgba(237,228,255,.55); color: var(--purple2); border: 1.5px solid rgba(216,205,255,.38); border-radius: 9px; font-size: .855rem; font-weight: 600; }
+    .btn-danger    { padding: .55rem 1.1rem; background: rgba(220,38,38,.07); color: #b91c1c; border: 1.5px solid rgba(220,38,38,.2); border-radius: 9px; font-size: .855rem; font-weight: 600; }
+    .btn-submit    { padding: .55rem 1.3rem; background: linear-gradient(135deg,#7c3aed,#a78bfa); color: white; border: none; border-radius: 9px; font-size: .855rem; font-weight: 700; box-shadow: 0 3px 10px rgba(124,58,237,.24); transition: all .2s; }
+    .btn-submit:hover { transform: translateY(-1px); }
+    .confirm-msg { text-align: center; padding: 1rem 0 .5rem; }
     .confirm-msg p { color: var(--muted); font-size: .9rem; margin-top: .4rem; }
+
+    /* jwt */
+    .jwt-panel { background: rgba(237,228,255,.25); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; margin-top: 1.4rem; }
+    .jwt-panel h3 { font-size: .855rem; color: var(--muted); margin-bottom: .9rem; display: flex; align-items: center; gap: .4rem; font-weight: 600; }
+    .jwt-parts { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .9rem; }
+    .jwt-part { padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: .68rem; word-break: break-all; }
+    .jwt-header-part  { background: rgba(220,38,38,.09); color: #b91c1c; }
+    .jwt-payload-part { background: rgba(139,92,246,.09); color: #5b21b6; }
+    .jwt-sig-part     { background: rgba(37,99,235,.09); color: #1d4ed8; }
+    .jwt-decoded pre  { background: white; padding: .75rem 1rem; border-radius: 9px; overflow-x: auto; color: var(--text); border: 1px solid var(--border); font-size: .76rem; }
+    .token-exp { margin-top: .7rem; font-size: .8rem; font-weight: 500; }
+    .exp-ok { color: #047857; } .exp-bad { color: #dc2626; }
+    .profile-card { background: rgba(255,255,255,.78); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; max-width: 600px; box-shadow: 0 2px 12px rgba(139,92,246,.06); }
+    .profile-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.4rem; }
+    .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg,#8b5cf6,#c4b5fd); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 700; color: white; box-shadow: 0 4px 16px rgba(139,92,246,.28); }
+    .profile-info h2 { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+    .profile-info p  { color: var(--muted); font-size: .875rem; margin-top: 3px; }
+
+    /* toast */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 7px; }
+    .toast { padding: 8px 13px; border-radius: 12px; font-size: .84rem; font-weight: 500; display: flex; align-items: center; gap: 7px; backdrop-filter: blur(12px); animation: toastIn .3s cubic-bezier(.34,1.56,.64,1) both; box-shadow: 0 5px 18px rgba(0,0,0,.09); min-width: 170px; }
+    .toast.success { background: rgba(240,253,244,.97); color: #047857; border: 1px solid rgba(110,231,183,.3); }
+    .toast.error   { background: rgba(254,242,242,.97); color: #b91c1c; border: 1px solid rgba(220,38,38,.25); }
+    .toast.info    { background: rgba(243,238,255,.97); color: #6d28d9; border: 1px solid rgba(216,205,255,.4); }
+    @keyframes toastIn { from{opacity:0;transform:translateX(16px) scale(.93)} to{opacity:1;transform:none} }
+    @keyframes pageIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+    #page-tasks, #page-users, #page-profile { animation: pageIn .3s ease both; }
+    .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.35); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
   </style>
 </head>
 <body>
 
+<!-- AUTH PAGE -->
 <div id="auth-page">
+  <svg class="auth-curve" style="top:0;left:0;width:260px;height:130px;" viewBox="0 0 260 130" fill="none">
+    <path d="M-20 70 C50 25,120 105,210 48 S310 12,360 58" stroke="rgba(196,181,253,.55)" stroke-width="2" fill="none"/>
+    <path d="M-20 95 C60 52,140 118,230 62 S330 22,380 75" stroke="rgba(165,180,252,.38)" stroke-width="1.5" fill="none"/>
+  </svg>
+  <svg class="auth-curve" style="top:0;right:0;width:240px;height:120px;" viewBox="0 0 240 120" fill="none">
+    <path d="M260 32 C190 65,120 10,50 52 S-35 85,-70 45" stroke="rgba(165,180,252,.5)" stroke-width="2" fill="none"/>
+    <path d="M260 58 C185 88,110 32,38 70 S-45 100,-80 58" stroke="rgba(196,181,253,.36)" stroke-width="1.5" fill="none"/>
+  </svg>
+  <svg class="auth-wave" viewBox="0 0 1440 160" preserveAspectRatio="none">
+    <path d="M0 100 C200 50,420 140,680 80 S1100 20,1440 90 L1440 160 L0 160 Z" fill="rgba(196,181,253,.16)"/>
+    <path d="M0 118 C240 68,480 148,760 98 S1160 48,1440 108 L1440 160 L0 160 Z" fill="rgba(165,180,252,.2)"/>
+    <path d="M0 136 C290 98,580 153,860 118 S1240 78,1440 128 L1440 160 L0 160 Z" fill="rgba(147,197,253,.22)"/>
+  </svg>
+
   <div class="auth-box">
-    <div class="auth-logo">🔐</div>
+    <div class="auth-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect x="2"  y="2"  width="13" height="13" rx="3"   fill="white" opacity=".95"/>
+        <rect x="18" y="2"  width="12" height="12" rx="2.5" fill="white" opacity=".82"/>
+        <rect x="2"  y="18" width="12" height="12" rx="2.5" fill="white" opacity=".82"/>
+        <rect x="18" y="18" width="10" height="10" rx="2"   fill="white" opacity=".62"/>
+      </svg>
+    </div>
     <div class="auth-title">Task Board</div>
-    <div class="auth-subtitle">Task Board — Final Lab Set 2</div>
+    <div class="auth-subtitle">Final Lab Set 2 — จัดการงานของทีมคุณ</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" onclick="switchTab('register')">Register</button>
+      <button class="auth-tab active" onclick="switchTab('login')">เข้าสู่ระบบ</button>
+      <button class="auth-tab" onclick="switchTab('register')">สมัครสมาชิก</button>
     </div>
     <div id="login-form">
-      <div class="form-group"><label>Email</label><input id="login-email" type="email" value="alice@example.com"></div>
-      <div class="form-group"><label>Password</label><input id="login-password" type="password" value="password123"></div>
+      <div class="form-group"><label>Email</label><input id="login-email" type="email" value="alice@example.com" placeholder="your@email.com"></div>
+      <div class="form-group"><label>Password</label><input id="login-password" type="password" value="password123" placeholder="••••••••"></div>
       <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
     </div>
     <div id="register-form" class="hidden">
-      <div class="form-group"><label>ชื่อ</label><input id="reg-name" type="text" placeholder="ชื่อ-นามสกุล"></div>
-      <div class="form-group"><label>Email</label><input id="reg-email" type="email"></div>
-      <div class="form-group"><label>Password</label><input id="reg-password" type="password"></div>
+      <div class="form-group"><label>ชื่อ-นามสกุล</label><input id="reg-name" type="text" placeholder="ชื่อของคุณ"></div>
+      <div class="form-group"><label>Email</label><input id="reg-email" type="email" placeholder="your@email.com"></div>
+      <div class="form-group"><label>Password</label><input id="reg-password" type="password" placeholder="••••••••"></div>
       <button class="btn-primary" onclick="doRegister()">สมัครสมาชิก</button>
     </div>
     <div id="auth-msg"></div>
   </div>
 </div>
 
+<!-- APP PAGE -->
 <div id="app-page" class="hidden">
   <nav class="sidebar">
-    <div class="sidebar-logo">📋 Task Board</div>
-<div class="sidebar-nav">
-      <button class="nav-item active" data-page="tasks" onclick="showPage('tasks')"><span class="nav-icon">✅</span> Tasks <span class="badge-count" id="task-count">0</span></button>
-      <button class="nav-item" data-page="users" id="nav-users" onclick="showPage('users')"><span class="nav-icon">👥</span> Users <span class="badge-count" id="user-count" style="display:none">0</span></button>
-      <a href="profile.html" class="nav-item" style="text-decoration: none;">
-        <span class="nav-icon">👤</span> Profile & Settings
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="17" height="17" viewBox="0 0 32 32" fill="none">
+          <rect x="2"  y="2"  width="13" height="13" rx="3"   fill="white" opacity=".95"/>
+          <rect x="18" y="2"  width="12" height="12" rx="2.5" fill="white" opacity=".82"/>
+          <rect x="2"  y="18" width="12" height="12" rx="2.5" fill="white" opacity=".82"/>
+          <rect x="18" y="18" width="10" height="10" rx="2"   fill="white" opacity=".62"/>
+        </svg>
+      </div>
+      <div><div class="sidebar-logo-text">Task Board</div><div class="sidebar-logo-sub">Workspace</div></div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section-label">เมนูหลัก</div>
+      <button class="nav-item active" data-page="tasks" onclick="showPage('tasks')">
+        <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        Tasks <span class="badge-count" id="task-count">0</span>
+      </button>
+      <button class="nav-item" data-page="users" id="nav-users" onclick="showPage('users')">
+        <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.1"/><circle cx="10" cy="4.5" r="2" stroke="currentColor" stroke-width="1.1"/><path d="M1 12C1 10.067 2.79 8.5 5 8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M7 11C7 9.9 8.34 9 10 9C11.66 9 13 9.9 13 11V12H7V11Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg></span>
+        Users <span class="badge-count" id="user-count" style="display:none">0</span>
+      </button>
+      <a href="profile.html" class="nav-item" data-page="profile" style="text-decoration:none;">
+        <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.1"/><path d="M2 13C2 10.5 4.24 8.5 7 8.5C9.76 8.5 12 10.5 12 13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+        Profile & Settings
       </a>
     </div>
     <div class="sidebar-footer">
       <div class="user-chip">
         <div class="user-avatar" id="sidebar-avatar">?</div>
         <div class="user-info-small"><div class="name" id="sidebar-name">—</div><span class="role-badge" id="sidebar-role-badge">—</span></div>
-        <button class="btn-logout" onclick="doLogout()">✕</button>
+        <div class="online-dot"></div>
+        <button class="btn-logout" onclick="doLogout()" title="ออกจากระบบ">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8.5 4.5L11.5 6.5L8.5 8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 6.5H11.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5 2H2V11H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </div>
   </nav>
 
   <div class="main-content">
+    <!-- TASKS -->
     <div id="page-tasks">
-      <div class="page-header"><div class="page-title">✅ Tasks</div><button class="btn-add" onclick="openCreateModal()">＋ สร้าง Task ใหม่</button></div>
+      <div class="page-header">
+        <div><div class="page-breadcrumb">Task Board › หน้าหลัก</div>
+        <div class="page-title"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2.5" stroke="#8b5cf6" stroke-width="1.3"/><path d="M4 7L6 9L10 5" stroke="#8b5cf6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Tasks</div></div>
+        <button class="btn-add" onclick="openCreateModal()"><svg width="11" height="11" viewBox="0 0 10 10" fill="none"><path d="M5 1.5V8.5M1.5 5H8.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>สร้าง Task ใหม่</button>
+      </div>
       <div class="page-body">
         <div class="stats-grid">
-            <div class="stat-card"><div><div class="stat-value" id="st-total">—</div><div class="stat-label">ทั้งหมด</div></div></div>
-            <div class="stat-card"><div><div class="stat-value" id="st-todo">—</div><div class="stat-label">TODO</div></div></div>
-            <div class="stat-card"><div><div class="stat-value" id="st-inprog">—</div><div class="stat-label">In Progress</div></div></div>
-            <div class="stat-card"><div><div class="stat-value" id="st-done">—</div><div class="stat-label">Done</div></div></div>
+          <div class="stat-card c-all"><div class="stat-icon-wrap"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.2" fill="#8b5cf6" opacity=".6"/><rect x="8" y="1" width="5" height="5" rx="1.2" fill="#8b5cf6" opacity=".4"/><rect x="1" y="8" width="5" height="5" rx="1.2" fill="#8b5cf6" opacity=".4"/><rect x="8" y="8" width="5" height="5" rx="1.2" fill="#8b5cf6" opacity=".25"/></svg></div><div class="stat-value" id="st-total">—</div><div class="stat-label">ทั้งหมด</div></div>
+          <div class="stat-card c-todo"><div class="stat-icon-wrap"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="2.5 2"/></svg></div><div class="stat-value" id="st-todo">—</div><div class="stat-label">To Do</div></div>
+          <div class="stat-card c-prog"><div class="stat-icon-wrap"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#fde68a" stroke-width="1.2"/><path d="M7 1.5A5.5 5.5 0 0 1 12.5 7" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/><circle cx="7" cy="7" r="1.5" fill="#f59e0b"/></svg></div><div class="stat-value" id="st-inprog">—</div><div class="stat-label">กำลังทำ</div></div>
+          <div class="stat-card c-done"><div class="stat-icon-wrap"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" fill="rgba(110,231,183,.15)" stroke="#34d399" stroke-width="1.2"/><path d="M4.5 7L6.5 9L9.5 5" stroke="#34d399" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="stat-value" id="st-done">—</div><div class="stat-label">เสร็จแล้ว</div></div>
         </div>
         <div class="toolbar">
           <button class="filter-btn active" onclick="setFilter('ALL')">ทั้งหมด</button>
-          <button class="filter-btn" onclick="setFilter('TODO')">TODO</button>
-          <button class="filter-btn" onclick="setFilter('IN_PROGRESS')">In Progress</button>
-          <button class="filter-btn" onclick="setFilter('DONE')">Done</button>
+          <button class="filter-btn" onclick="setFilter('TODO')">To Do</button>
+          <button class="filter-btn" onclick="setFilter('IN_PROGRESS')">กำลังทำ</button>
+          <button class="filter-btn" onclick="setFilter('DONE')">เสร็จแล้ว</button>
         </div>
         <div class="task-list" id="task-list"></div>
       </div>
     </div>
 
+    <!-- USERS -->
     <div id="page-users" class="hidden">
-      <div class="page-header"><div class="page-title">👥 Users</div></div>
+      <div class="page-header">
+        <div><div class="page-breadcrumb">Task Board › ผู้ใช้งาน</div>
+        <div class="page-title"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="4.5" r="2" stroke="#8b5cf6" stroke-width="1.3"/><circle cx="10" cy="4.5" r="2" stroke="#8b5cf6" stroke-width="1.3"/><path d="M1 12C1 10.067 2.79 8.5 5 8.5" stroke="#8b5cf6" stroke-width="1.3" stroke-linecap="round"/><path d="M7 11C7 9.9 8.34 9 10 9C11.66 9 13 9.9 13 11V12H7V11Z" stroke="#8b5cf6" stroke-width="1.3" stroke-linejoin="round"/></svg>Users</div></div>
+      </div>
       <div class="page-body">
         <div id="users-admin-only" class="hidden"><div class="user-table"><div class="user-row header"><div>ผู้ใช้</div><div>Email</div><div>Role</div><div>สมัครเมื่อ</div></div><div id="user-rows"></div></div></div>
-        <div id="users-forbidden" class="empty-state hidden"><div class="emoji">🚫</div><p>403 Forbidden</p></div>
+        <div id="users-forbidden" class="empty-state hidden"><div class="empty-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="margin:0 auto;display:block;"><circle cx="26" cy="26" r="22" stroke="#ddd6fe" stroke-width="2"/><path d="M18 18L34 34M34 18L18 34" stroke="#ddd6fe" stroke-width="2" stroke-linecap="round"/></svg></div><p style="font-weight:700;color:var(--text2);margin-bottom:.3rem;">403 Forbidden</p><p>คุณไม่มีสิทธิ์ดูหน้านี้</p></div>
       </div>
     </div>
 
+    <!-- PROFILE in-app -->
     <div id="page-profile" class="hidden">
-      <div class="page-header"><div class="page-title">👤 Profile & JWT</div></div>
+      <div class="page-header">
+        <div><div class="page-breadcrumb">Task Board › โปรไฟล์</div>
+        <div class="page-title"><svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="#8b5cf6" stroke-width="1.3"/><path d="M2 13C2 10.5 4.24 8.5 7 8.5C9.76 8.5 12 10.5 12 13" stroke="#8b5cf6" stroke-width="1.3" stroke-linecap="round"/></svg>Profile & JWT</div></div>
+      </div>
       <div class="page-body">
         <div class="profile-card">
-            <div class="profile-header"><div class="profile-avatar" id="prof-avatar">?</div><div class="profile-info"><h2 id="prof-name">—</h2><p id="prof-email">—</p></div></div>
-            <div class="jwt-panel"><h3>🔍 JWT Inspector</h3><div id="jwt-parts"></div><div id="jwt-decoded"></div><div id="token-exp"></div></div>
+          <div class="profile-header"><div class="profile-avatar" id="prof-avatar">?</div><div class="profile-info"><h2 id="prof-name">—</h2><p id="prof-email">—</p></div></div>
+          <div class="jwt-panel"><h3>JWT Inspector</h3><div id="jwt-parts"></div><div id="jwt-decoded" class="jwt-decoded"></div><div id="token-exp"></div></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- TASK MODAL -->
 <div id="task-modal" class="modal-overlay hidden">
   <div class="modal">
-    <div class="modal-header"><h3 id="modal-title">จัดการ Task</h3><button class="btn-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-header"><h3 id="modal-title">จัดการ Task</h3><button class="btn-close" onclick="closeModal()"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 2L11 11M11 2L2 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>
     <div class="modal-body">
       <input type="hidden" id="modal-task-id">
-      <div class="form-group"><label>ชื่อ Task *</label><input id="modal-task-title"></div>
-      <div class="form-group"><label>รายละเอียด</label><textarea id="modal-task-desc"></textarea></div>
-      <div class="form-group"><label>สถานะ</label><select id="modal-task-status"><option value="TODO">TODO</option><option value="IN_PROGRESS">In Progress</option><option value="DONE">Done</option></select></div>
+      <div class="form-group"><label>ชื่อ Task *</label><input id="modal-task-title" placeholder="ชื่อ Task"></div>
+      <div class="form-group"><label>รายละเอียด</label><textarea id="modal-task-desc" placeholder="รายละเอียด..."></textarea></div>
+      <div class="form-group"><label>สถานะ</label><select id="modal-task-status"><option value="TODO">To Do</option><option value="IN_PROGRESS">กำลังทำ</option><option value="DONE">เสร็จแล้ว</option></select></div>
       <div class="form-group"><label>ความสำคัญ</label><select id="modal-task-priority"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
     </div>
-    <div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">ยกเลิก</button><button class="btn-submit" id="modal-submit-btn" onclick="submitTask()">💾 บันทึก</button></div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">ยกเลิก</button><button class="btn-submit" id="modal-submit-btn" onclick="submitTask()">บันทึก</button></div>
   </div>
 </div>
 
+<!-- CONFIRM DELETE -->
 <div id="confirm-modal" class="modal-overlay hidden">
-  <div class="modal"><div class="modal-body"><div class="confirm-msg"><p>ลบ Task นี้?</p></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeConfirm()">ยกเลิก</button><button class="btn-danger" id="confirm-delete-btn">ลบ</button></div></div>
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-body">
+      <div class="confirm-msg">
+        <div style="margin-bottom:.75rem;"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin:0 auto;display:block;"><circle cx="24" cy="24" r="20" fill="rgba(220,38,38,.07)" stroke="rgba(220,38,38,.2)" stroke-width="1.5"/><path d="M24 15V25" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="31" r="1.5" fill="#dc2626"/></svg></div>
+        <p style="font-weight:700;color:var(--text);font-size:1rem;">ลบ Task นี้?</p>
+        <p>การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" onclick="closeConfirm()">ยกเลิก</button><button class="btn-danger" id="confirm-delete-btn">ลบ Task</button></div>
+  </div>
 </div>
+
 <div class="toast-container" id="toast-container"></div>
-
 <script src="config.js"></script>
-
 <script>
-/* ─────────────────────────────────────
-   STATE & CONFIG (ดึงจาก window.APP_CONFIG)
-───────────────────────────────────── */
-const AUTH = window.APP_CONFIG.AUTH_URL;
-const TASK = window.APP_CONFIG.TASK_URL;
-const USER = window.APP_CONFIG.USER_URL;
-
-let currentUser = null;
-let token       = localStorage.getItem('jwt_token');
-let allTasks    = [];
-let currentFilter = 'ALL';
-
-/* ─────────────────────────────────────
-   API HELPERS
-───────────────────────────────────── */
-function authHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  };
-}
-
-/* ─────────────────────────────────────
-   AUTH (ใช้ AUTH URL)
-───────────────────────────────────── */
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  
-  try {
-    const res = await fetch(`${AUTH}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      token = data.token;
-      localStorage.setItem('jwt_token', token);
-      initApp(data.user);
-    } else {
-      toast(data.error || 'Login ล้มเหลว', 'error');
-    }
-  } catch(err) { toast('เชื่อมต่อ Server Auth ไม่ได้', 'error'); }
-}
-
-async function doRegister() {
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const password = document.getElementById('reg-password').value;
-
-  try {
-    const res = await fetch(`${AUTH}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }) // หรือใช้ username ตาม spec API ของคุณ
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      token = data.token;
-      localStorage.setItem('jwt_token', token);
-      initApp(data.user);
-    } else {
-      toast(data.error || 'สมัครไม่สำเร็จ', 'error');
-    }
-  } catch(err) { toast('เชื่อมต่อ Server Auth ไม่ได้', 'error'); }
-}
-
-/* ─────────────────────────────────────
-   TASKS (ใช้ TASK URL)
-───────────────────────────────────── */
-async function loadTasks() {
-  try {
-    const res = await fetch(`${TASK}/api/tasks/`, { headers: authHeaders() });
-    const data = await res.json();
-    if (res.ok) {
-      allTasks = data.tasks || [];
-      renderTasks();
-      updateStats();
-      document.getElementById('task-count').textContent = allTasks.length;
-    }
-  } catch(err) { console.error("Task API Error", err); }
-}
-
-async function submitTask() {
-  const id = document.getElementById('modal-task-id').value;
-  const body = {
-    title: document.getElementById('modal-task-title').value,
-    description: document.getElementById('modal-task-desc').value,
-    status: document.getElementById('modal-task-status').value,
-    priority: document.getElementById('modal-task-priority').value,
-  };
-
-  const method = id ? 'PUT' : 'POST';
-  const url = id ? `${TASK}/api/tasks/${id}` : `${TASK}/api/tasks/`;
-
-  try {
-    const res = await fetch(url, {
-      method: method,
-      headers: authHeaders(),
-      body: JSON.stringify(body)
-    });
-    if (res.ok) {
-      toast('สำเร็จ', 'success');
-      closeModal();
-      loadTasks();
-    }
-  } catch(err) { toast('บันทึก Task ไม่สำเร็จ', 'error'); }
-}
-
-async function quickStatusUpdate(id, newStatus) {
-  try {
-    await fetch(`${TASK}/api/tasks/${id}`, {
-      method: 'PUT',
-      headers: authHeaders(),
-      body: JSON.stringify({ status: newStatus })
-    });
-    loadTasks();
-  } catch(err) { toast('Update สถานะไม่สำเร็จ', 'error'); }
-}
-
-async function deleteTask(id) {
-  try {
-    const res = await fetch(`${TASK}/api/tasks/${id}`, {
-      method: 'DELETE',
-      headers: authHeaders()
-    });
-    if (res.ok) {
-      toast('ลบ Task แล้ว', 'success');
-      closeConfirm();
-      loadTasks();
-    }
-  } catch(err) { toast('ลบไม่สำเร็จ', 'error'); }
-}
-
-/* ─────────────────────────────────────
-   USERS & PROFILE (ใช้ USER URL)
-───────────────────────────────────── */
-async function loadUsers() {
-  try {
-    const res = await fetch(`${USER}/api/users/`, { headers: authHeaders() });
-    const data = await res.json();
-    const adminDiv = document.getElementById('users-admin-only');
-    const forbiddenDiv = document.getElementById('users-forbidden');
-
-    if (res.status === 403) {
-      adminDiv.classList.add('hidden');
-      forbiddenDiv.classList.remove('hidden');
-      return;
-    }
-
-    if (res.ok) {
-      forbiddenDiv.classList.add('hidden');
-      adminDiv.classList.remove('hidden');
-      document.getElementById('user-rows').innerHTML = data.users.map(u => `
-        <div class="user-row">
-          <div><strong>${u.name}</strong></div>
-          <div>${u.email}</div>
-          <div><span class="role-badge role-${u.role}">${u.role}</span></div>
-          <div>${new Date(u.created_at).toLocaleDateString()}</div>
-        </div>
-      `).join('');
-    }
-  } catch(err) { console.error("User API Error", err); }
-}
-
-async function loadProfile() {
-  try {
-    const res = await fetch(`${USER}/api/users/me`, { headers: authHeaders() });
-    const data = await res.json();
-    if (res.ok) {
-      const u = data.user;
-      document.getElementById('prof-name').textContent = u.name;
-      document.getElementById('prof-email').textContent = u.email;
-      document.getElementById('prof-avatar').textContent = (u.name||'?')[0];
-      renderJwtInspector();
-    }
-  } catch(err) { console.error("Profile API Error", err); }
-}
-
-/* ─────────────────────────────────────
-   UI & NAVIGATION (รักษา Logic เดิม)
-───────────────────────────────────── */
-function initApp(user) {
-  currentUser = user;
-  document.getElementById('auth-page').classList.add('hidden');
-  document.getElementById('app-page').classList.remove('hidden');
-  document.getElementById('sidebar-name').textContent = user.name || user.email;
-  document.getElementById('sidebar-avatar').textContent = (user.name||'?')[0];
-  document.getElementById('sidebar-role-badge').textContent = user.role;
-  document.getElementById('sidebar-role-badge').className = `role-badge role-${user.role}`;
-  document.getElementById('nav-users').style.display = user.role === 'admin' ? 'flex' : 'none';
-  showPage('tasks');
-}
-
-function showPage(page) {
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
-  ['tasks','users','profile'].forEach(p => {
-    document.getElementById(`page-${p}`).classList.toggle('hidden', p !== page);
-  });
-  if (page === 'tasks') loadTasks();
-  if (page === 'users') loadUsers();
-  if (page === 'profile') loadProfile();
-}
-
-function switchTab(tab) {
-  document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
-  document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
-  document.querySelectorAll('.auth-tab').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(tab)));
-}
-
-function renderTasks() {
-  const filtered = currentFilter === 'ALL' ? allTasks : allTasks.filter(t => t.status === currentFilter);
-  const list = document.getElementById('task-list');
-  if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="emoji">📝</div><p>ไม่มีรายการ</p></div>';
-    return;
-  }
-  list.innerHTML = filtered.map(t => `
-    <div class="task-card status-${t.status}">
-      <div class="task-header">
-        <div class="title ${t.status === 'DONE' ? 'done' : ''}">${t.title}</div>
-        <div class="task-actions">
-          <button class="btn-icon edit" onclick="openEditModal(${t.id})">✏️</button>
-          <button class="btn-icon delete" onclick="openConfirm(${t.id})">🗑️</button>
-        </div>
-      </div>
-      <div class="task-desc">${t.description || ''}</div>
-      <div class="task-meta">
-        <span class="chip chip-owner">👤 ${t.owner_id || 'system'}</span>
-        <span class="chip chip-${t.priority}">Priority: ${t.priority}</span>
-        <select class="status-select" onchange="quickStatusUpdate(${t.id}, this.value)">
-          <option value="TODO" ${t.status==='TODO'?'selected':''}>TODO</option>
-          <option value="IN_PROGRESS" ${t.status==='IN_PROGRESS'?'selected':''}>In Progress</option>
-          <option value="DONE" ${t.status==='DONE'?'selected':''}>Done</option>
-        </select>
-      </div>
-    </div>
-  `).join('');
-}
-
-function updateStats() {
-  const c = { TODO:0, IN_PROGRESS:0, DONE:0 };
-  allTasks.forEach(t => c[t.status]++);
-  document.getElementById('st-total').textContent = allTasks.length;
-  document.getElementById('st-todo').textContent = c.TODO;
-  document.getElementById('st-inprog').textContent = c.IN_PROGRESS;
-  document.getElementById('st-done').textContent = c.DONE;
-}
-
-function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-      b.classList.toggle('active', b.onclick.toString().includes(f));
-  });
-  renderTasks();
-}
-
-function openCreateModal() {
-  document.getElementById('modal-title').textContent = 'สร้าง Task ใหม่';
-  document.getElementById('modal-task-id').value = '';
-  document.getElementById('modal-task-title').value = '';
-  document.getElementById('modal-task-desc').value = '';
-  document.getElementById('modal-task-status').value = 'TODO';
-  document.getElementById('modal-task-priority').value = 'low';
-  document.getElementById('task-modal').classList.remove('hidden');
-}
-
-function openEditModal(id) {
-  const t = allTasks.find(x => x.id === id);
-  if (!t) return;
-  document.getElementById('modal-title').textContent = 'แก้ไข Task';
-  document.getElementById('modal-task-id').value = t.id;
-  document.getElementById('modal-task-title').value = t.title;
-  document.getElementById('modal-task-desc').value = t.description;
-  document.getElementById('modal-task-status').value = t.status;
-  document.getElementById('modal-task-priority').value = t.priority;
-  document.getElementById('task-modal').classList.remove('hidden');
-}
-
-function closeModal() { document.getElementById('task-modal').classList.add('hidden'); }
-function openConfirm(id) {
-  document.getElementById('confirm-modal').classList.remove('hidden');
-  document.getElementById('confirm-delete-btn').onclick = () => deleteTask(id);
-}
-function closeConfirm() { document.getElementById('confirm-modal').classList.add('hidden'); }
-
-function toast(msg, type) {
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.textContent = msg;
-  document.getElementById('toast-container').prepend(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-function doLogout() {
-  localStorage.removeItem('jwt_token');
-  location.reload();
-}
-
-function renderJwtInspector() {
-  if (!token) return;
-  const parts = token.split('.');
-  if (parts.length !== 3) return;
-  const html = `
-    <div class="jwt-parts">
-      <span class="jwt-part jwt-header-part">${parts[0]}</span>.
-      <span class="jwt-part jwt-payload-part">${parts[1]}</span>.
-      <span class="jwt-part jwt-sig-part">${parts[2]}</span>
-    </div>
-  `;
-  document.getElementById('jwt-parts').innerHTML = html;
-  try {
-    const payload = JSON.parse(atob(parts[1]));
-    document.getElementById('jwt-decoded').innerHTML = `<pre>${JSON.stringify(payload, null, 2)}</pre>`;
-    const exp = new Date(payload.exp * 1000);
-    const isBad = exp < new Date();
-    document.getElementById('token-exp').innerHTML = `<div class="token-exp ${isBad?'exp-bad':'exp-ok'}">${isBad?'❌ Expired':'✅ Valid until'}: ${exp.toLocaleString()}</div>`;
-  } catch(e) {}
-}
-
-// ปรับแก้ส่วนท้ายของไฟล์ index.html
-if (token) {
-  // มี Token ให้ตรวจสอบก่อน
-  fetch(`${AUTH}/api/auth/verify`, { headers: { Authorization: `Bearer ${token}` } })
-    .then(r => r.json())
-    .then(data => {
-      if (data.valid) {
-        initApp(data.user); // ถ้าผ่าน ให้เข้าหน้าหลัก
-      } else {
-        doLogout(); // ถ้าไม่ผ่าน (Token หมดอายุ) ให้ไปหน้า Login
-        document.getElementById('page-login').style.display = 'block'; 
-      }
-    })
-    .catch(() => {
-        doLogout();
-        document.getElementById('page-login').style.display = 'block';
-    });
-} else {
-  // ไม่มี Token ตั้งแต่แรก ให้โชว์หน้า Login ทันที
-  document.getElementById('page-login').style.display = 'block';
-}
+const AUTH=window.APP_CONFIG.AUTH_URL,TASK=window.APP_CONFIG.TASK_URL,USER=window.APP_CONFIG.USER_URL;
+let currentUser=null,token=localStorage.getItem('jwt_token'),allTasks=[],currentFilter='ALL';
+function authHeaders(){return{'Content-Type':'application/json','Authorization':`Bearer ${token}`};}
+async function doLogin(){const email=document.getElementById('login-email').value.trim(),password=document.getElementById('login-password').value;try{const res=await fetch(`${AUTH}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})}),data=await res.json();if(res.ok){token=data.token;localStorage.setItem('jwt_token',token);initApp(data.user);}else showAuthMsg(data.error||'Login ล้มเหลว','error');}catch{showAuthMsg('เชื่อมต่อ Server ไม่ได้','error');}}
+async function doRegister(){const name=document.getElementById('reg-name').value.trim(),email=document.getElementById('reg-email').value.trim(),password=document.getElementById('reg-password').value;try{const res=await fetch(`${AUTH}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password})}),data=await res.json();if(res.ok){token=data.token;localStorage.setItem('jwt_token',token);initApp(data.user);}else showAuthMsg(data.error||'สมัครไม่สำเร็จ','error');}catch{showAuthMsg('เชื่อมต่อ Server ไม่ได้','error');}}
+function showAuthMsg(msg,type){const el=document.getElementById('auth-msg');el.className=`auth-msg ${type}`;el.textContent=msg;}
+async function loadTasks(){try{const res=await fetch(`${TASK}/api/tasks/`,{headers:authHeaders()}),data=await res.json();if(res.ok){allTasks=data.tasks||[];renderTasks();updateStats();document.getElementById('task-count').textContent=allTasks.length;}}catch(e){console.error(e);}}
+async function submitTask(){const id=document.getElementById('modal-task-id').value,body={title:document.getElementById('modal-task-title').value,description:document.getElementById('modal-task-desc').value,status:document.getElementById('modal-task-status').value,priority:document.getElementById('modal-task-priority').value};const method=id?'PUT':'POST',url=id?`${TASK}/api/tasks/${id}`:`${TASK}/api/tasks/`;try{const res=await fetch(url,{method,headers:authHeaders(),body:JSON.stringify(body)});if(res.ok){toast('บันทึกสำเร็จ','success');closeModal();loadTasks();}}catch{toast('บันทึกไม่สำเร็จ','error');}}
+async function quickStatusUpdate(id,newStatus){try{await fetch(`${TASK}/api/tasks/${id}`,{method:'PUT',headers:authHeaders(),body:JSON.stringify({status:newStatus})});loadTasks();}catch{toast('Update ไม่สำเร็จ','error');}}
+async function deleteTask(id){try{const res=await fetch(`${TASK}/api/tasks/${id}`,{method:'DELETE',headers:authHeaders()});if(res.ok){toast('ลบ Task แล้ว','success');closeConfirm();loadTasks();}}catch{toast('ลบไม่สำเร็จ','error');}}
+async function loadUsers(){try{const res=await fetch(`${USER}/api/users/`,{headers:authHeaders()}),data=await res.json();const a=document.getElementById('users-admin-only'),f=document.getElementById('users-forbidden');if(res.status===403){a.classList.add('hidden');f.classList.remove('hidden');return;}if(res.ok){f.classList.add('hidden');a.classList.remove('hidden');document.getElementById('user-rows').innerHTML=data.users.map(u=>`<div class="user-row"><div><strong>${u.name}</strong><div class="user-email">${u.email}</div></div><div>${u.email}</div><div><span class="role-badge role-${u.role}">${u.role}</span></div><div style="font-size:.78rem;color:var(--muted)">${new Date(u.created_at).toLocaleDateString('th-TH')}</div></div>`).join('');}}catch(e){console.error(e);}}
+async function loadProfile(){try{const res=await fetch(`${USER}/api/users/me`,{headers:authHeaders()}),data=await res.json();if(res.ok){const u=data.user;document.getElementById('prof-name').textContent=u.name;document.getElementById('prof-email').textContent=u.email;document.getElementById('prof-avatar').textContent=(u.name||'?')[0];renderJwtInspector();}}catch(e){console.error(e);}}
+function initApp(user){currentUser=user;document.getElementById('auth-page').classList.add('hidden');document.getElementById('app-page').classList.remove('hidden');document.getElementById('sidebar-name').textContent=user.name||user.email;document.getElementById('sidebar-avatar').textContent=(user.name||'?')[0];document.getElementById('sidebar-role-badge').textContent=user.role;document.getElementById('sidebar-role-badge').className=`role-badge role-${user.role}`;document.getElementById('nav-users').style.display=user.role==='admin'?'flex':'none';showPage('tasks');}
+function showPage(page){document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));const a=document.querySelector(`.nav-item[data-page="${page}"]`);if(a)a.classList.add('active');['tasks','users','profile'].forEach(p=>{document.getElementById(`page-${p}`).classList.toggle('hidden',p!==page);});if(page==='tasks')loadTasks();if(page==='users')loadUsers();if(page==='profile')loadProfile();}
+function switchTab(tab){document.getElementById('login-form').classList.toggle('hidden',tab!=='login');document.getElementById('register-form').classList.toggle('hidden',tab!=='register');document.querySelectorAll('.auth-tab').forEach(b=>b.classList.toggle('active',(tab==='login'?'เข้าสู่ระบบ':'สมัครสมาชิก')===b.textContent));document.getElementById('auth-msg').textContent='';document.getElementById('auth-msg').className='';}
+function renderTasks(){const filtered=currentFilter==='ALL'?allTasks:allTasks.filter(t=>t.status===currentFilter);const list=document.getElementById('task-list');if(filtered.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="margin:0 auto;display:block;"><rect x="8" y="8" width="36" height="36" rx="7" stroke="#ddd6fe" stroke-width="2" stroke-dasharray="5 3"/><path d="M20 26H32M26 20V32" stroke="#ddd6fe" stroke-width="2" stroke-linecap="round"/></svg></div><p style="font-weight:700;color:var(--text2);margin-bottom:.3rem;">ยังไม่มี Task</p><p>กดปุ่ม "สร้าง Task ใหม่" เพื่อเริ่มต้น</p></div>`;return;}
+const sc={TODO:'<span class="chip chip-todo">To Do</span>',IN_PROGRESS:'<span class="chip chip-inprogress">กำลังทำ</span>',DONE:'<span class="chip chip-done">เสร็จแล้ว</span>'};
+list.innerHTML=filtered.map(t=>`<div class="task-card status-${t.status}"><div class="task-header"><div class="title ${t.status==='DONE'?'done':''}">${t.title}</div><div class="task-actions"><button class="btn-icon edit" onclick="openEditModal(${t.id})"><svg width="12" height="12" viewBox="0 0 11 11" fill="none"><path d="M7.5 2L9.5 4L3.5 9.5H1.5V7.5L7.5 2Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg></button><button class="btn-icon delete" onclick="openConfirm(${t.id})"><svg width="12" height="12" viewBox="0 0 11 11" fill="none"><path d="M2 3H9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><rect x="3" y="3" width="5" height="6.5" rx="1" stroke="currentColor" stroke-width="1.1"/></svg></button></div></div>${t.description?`<div class="task-desc">${t.description}</div>`:''}<div class="task-meta"><span class="chip chip-owner">${t.owner_id||'system'}</span>${sc[t.status]||''}<span class="chip chip-${t.priority}">${t.priority}</span><select class="status-select" onchange="quickStatusUpdate(${t.id},this.value)"><option value="TODO" ${t.status==='TODO'?'selected':''}>To Do</option><option value="IN_PROGRESS" ${t.status==='IN_PROGRESS'?'selected':''}>กำลังทำ</option><option value="DONE" ${t.status==='DONE'?'selected':''}>เสร็จแล้ว</option></select></div></div>`).join('');}
+function updateStats(){const c={TODO:0,IN_PROGRESS:0,DONE:0};allTasks.forEach(t=>c[t.status]++);document.getElementById('st-total').textContent=allTasks.length;document.getElementById('st-todo').textContent=c.TODO;document.getElementById('st-inprog').textContent=c.IN_PROGRESS;document.getElementById('st-done').textContent=c.DONE;}
+function setFilter(f){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.onclick.toString().includes(`'${f}'`)));renderTasks();}
+function openCreateModal(){document.getElementById('modal-title').textContent='สร้าง Task ใหม่';document.getElementById('modal-task-id').value='';document.getElementById('modal-task-title').value='';document.getElementById('modal-task-desc').value='';document.getElementById('modal-task-status').value='TODO';document.getElementById('modal-task-priority').value='low';document.getElementById('task-modal').classList.remove('hidden');}
+function openEditModal(id){const t=allTasks.find(x=>x.id===id);if(!t)return;document.getElementById('modal-title').textContent='แก้ไข Task';document.getElementById('modal-task-id').value=t.id;document.getElementById('modal-task-title').value=t.title;document.getElementById('modal-task-desc').value=t.description;document.getElementById('modal-task-status').value=t.status;document.getElementById('modal-task-priority').value=t.priority;document.getElementById('task-modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('task-modal').classList.add('hidden');}
+function openConfirm(id){document.getElementById('confirm-modal').classList.remove('hidden');document.getElementById('confirm-delete-btn').onclick=()=>deleteTask(id);}
+function closeConfirm(){document.getElementById('confirm-modal').classList.add('hidden');}
+function toast(msg,type='success'){const icons={success:'✓',error:'✕',info:'i'};const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=`<span style="font-weight:700">${icons[type]||''}</span> ${msg}`;document.getElementById('toast-container').prepend(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(12px)';t.style.transition='all .25s';setTimeout(()=>t.remove(),260);},2800);}
+function doLogout(){localStorage.removeItem('jwt_token');location.reload();}
+function renderJwtInspector(){if(!token)return;const parts=token.split('.');if(parts.length!==3)return;document.getElementById('jwt-parts').innerHTML=`<div class="jwt-parts"><span class="jwt-part jwt-header-part">${parts[0]}</span>.<span class="jwt-part jwt-payload-part">${parts[1]}</span>.<span class="jwt-part jwt-sig-part">${parts[2]}</span></div>`;try{const p=JSON.parse(atob(parts[1]));document.getElementById('jwt-decoded').innerHTML=`<pre>${JSON.stringify(p,null,2)}</pre>`;const exp=new Date(p.exp*1000),bad=exp<new Date();document.getElementById('token-exp').innerHTML=`<div class="token-exp ${bad?'exp-bad':'exp-ok'}">${bad?'✕ Expired':'✓ Valid until'}: ${exp.toLocaleString('th-TH')}</div>`;}catch{}}
+if(token){fetch(`${AUTH}/api/auth/verify`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json()).then(d=>{if(d.valid)initApp(d.user);else doLogout();}).catch(()=>doLogout());}
+else{document.getElementById('auth-page').style.display='flex';}
 </script>
 </body>
 </html>
