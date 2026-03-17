@@ -8,12 +8,11 @@
 
 ## ขอบเขตงานที่รับผิดชอบ
 
-รับผิดชอบในส่วนของ **Frontend Development** และการจัดการโครงสร้างโปรเจกต์ (Project Scaffolding) โดยมีรายละเอียดดังนี้:
-* พัฒนาหน้าจอ **Task Board UI** สำหรับจัดการงานทั่วไป
-* พัฒนาหน้าจอ **Log Dashboard** สำหรับผู้ดูแลระบบ (Admin Only)
-* ออกแบบและจัดวางโครงสร้าง Repository (File & Folder Structure)
-* จัดการการเชื่อมต่อ API ผ่านโปรโตคอล HTTPS (Frontend-Backend Integration)
-* จัดทำเอกสารสรุปโครงสร้างสถาปัตยกรรม (Project Documentation)
+ในโปรเจกต์ Set 2 นี้ รับผิดชอบหลักในส่วนของ Frontend Development โดยมีรายละเอียดดังนี้:
+* พัฒนาและปรับปรุงหน้าจอส่วนหน้า (UI) เพื่อรองรับฟีเจอร์ใหม่ในระบบ Microservices
+* จัดการระบบการตั้งค่า (Configuration Management) เพื่อให้ Frontend สามารถเชื่อมต่อกับ API บน Cloud ได้อย่างถูกต้อง
+* สนับสนุนการตั้งค่าเบื้องต้นบนระบบ Railway สำหรับบาง Service
+* จัดทำเอกสารสรุปผลการดำเนินงานและโครงสร้างของโปรเจกต์ (Project Documentation)
 
 ## สิ่งที่ได้ดำเนินการด้วยตนเอง
 
