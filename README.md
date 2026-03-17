@@ -1,8 +1,8 @@
 # ENGSE207 Software Architecture Final Lab Set 2
 
 ## ข้อมูลผู้จัดทำ (กลุ่ม S1-5)
-1. นางสาว รัฐจิกาลณ์ กวงคำ (รหัสนักศึกษา: 67543210063-3)
-2. นาย ธนมินทร์ เปลี่ยนพร้อม (รหัสนักศึกษา: 67543210032-8)
+1. นาย ธนมินทร์ เปลี่ยนพร้อม (รหัสนักศึกษา: 67543210032-8)
+2. นางสาว รัฐจิกาลณ์ กวงคำ (รหัสนักศึกษา: 67543210063-3)
 
 **Repository:** `https://github.com/PaNiNi005/engse207-final-lab2-675432100328-675432100633/tree/main`
 
@@ -163,6 +163,8 @@ curl -X POST [TASK_URL]/api/tasks \
 ### Screenshots
 
 - **01_railway_dashboard.png**: Railway Project แสดง 3 services + 3 databases
+<img width="1919" height="965" alt="image" src="https://github.com/user-attachments/assets/a1987fa9-de6a-4c94-991e-89ebdb15877b" />
+
 - **02_auth_register_cloud.png**: POST register -> 201
 - **03_auth_login_cloud.png**: POST login -> JWT token
 - **04_auth_me_cloud.png**: GET /auth/me -> user info
