@@ -15,18 +15,14 @@
 ## การแบ่งงานหลัก
 
 ### สมาชิกคนที่ 1: นาย ธนมินทร์ เปลี่ยนพร้อม
-
 **รับผิดชอบงานหลักดังต่อไปนี้**
-
 * **Backend Microservices:** พัฒนาและปรับปรุงโค้ดฝั่ง Server (Auth, Task, User Services) และเพิ่ม Register API
 * **Infrastructure & Cloud Deployment:** จัดการระบบฐานข้อมูลแบบแยกส่วน (Database-per-Service) และ Deploy ระบบขึ้น Railway
 * **Security & JWT:** ตั้งค่าการตรวจสอบสิทธิ์ (Authentication) และการจัดการ Environment Variables (Secrets) บน Cloud
 * **Database Schema:** ออกแบบและเตรียมความพร้อมของฐานข้อมูล PostgreSQL ทั้ง 3 ชุด
 
 ### สมาชิกคนที่ 2: นางสาว รัฐจิกาลณ์ กวงคำ
-
 **รับผิดชอบงานหลักดังต่อไปนี้**
-
 * **Frontend Development:** พัฒนาและปรับปรุง UI ทั้งหมด (index.html, profile.html) ให้รองรับระบบ Microservices
 * **Service Configuration:** จัดการไฟล์ config.js สำหรับเชื่อมต่อ Frontend เข้ากับ Cloud Endpoints ของแต่ละ Service
 * **Documentation & Templates:** จัดทำรายงานสรุปผลการดำเนินงานรายบุคคล และเตรียมโครงสร้างเอกสารของกลุ่ม
@@ -36,17 +32,15 @@
 
 ## งานที่ดำเนินการร่วมกัน
 
-* **Documentation:** จัดทำไฟล์ `README.md` และสรุปเนื้อหาการส่งงาน
-* **Evidence Collection:** จัดเก็บ Screenshots ผลการทดสอบระบบ (Test Results) ทุกขั้นตอน
-* **System Integration:** ทดสอบระบบแบบ End-to-End เพื่อตรวจสอบความถูกต้องของ Workflow ทั้งหมด
+* **Cross-Service Debugging:** ช่วยกันตรวจสอบและแก้ไขข้อผิดพลาดของระบบ (เช่น ปัญหาหน้า Profile ไม่สามารถบันทึกข้อมูลได้ หรือปัญหาเรื่อง CORS)
+* **Architecture Design:** ร่วมกันออกแบบสถาปัตยกรรมระบบใน Set 2 เพื่อวางแผนการส่งต่อข้อมูลระหว่าง Frontend และ Microservices
+* **End-to-End Testing:** ทดสอบกระบวนการทำงานตั้งแต่การ Register, Login, การจัดการ Task ไปจนถึงการอัปเดต Profile บนระบบ Cloud จริง
+* **Final Review:** ตรวจสอบความเรียบร้อยของโค้ด (Code Review) และจัดทำ README พร้อมรวบรวม Screenshots สำหรับการส่งงาน
 
 ## เหตุผลในการแบ่งงาน
 
-การแบ่งงานยึดตาม **ความถนัดของแต่ละบุคคล (Specialized Skills)** โดยแบ่งตามแนวคิด Separation of Concerns: 
-* สมาชิกคนที่ 1 เน้นด้าน Systems, Security และ Backend Infrastructure 
-* สมาชิกคนที่ 2 เน้นด้าน User Interface, Frontend Logic และการจัดการโครงสร้างไฟล์งาน (Project Organization) 
-เพื่อให้การพัฒนาแต่ละส่วนสามารถทำควบคู่กันไปได้อย่างมีประสิทธิภาพ
+การแบ่งงานในกลุ่มนี้ใช้รูปแบบ Flexible Collaborative Approach (การทำงานร่วมกันแบบยืดหยุ่น) โดยแม้จะมีการแบ่งหัวข้อรับผิดชอบหลักตามความถนัด (Frontend และ Backend/Infrastructure) เพื่อความรวดเร็วในการเริ่มต้นงาน แต่ในขั้นตอนการพัฒนาจริง สมาชิกทั้งสองคนจะช่วยกันดูโค้ดและช่วยกันแก้ไขปัญหาในทุกส่วน เพื่อให้เกิดความเข้าใจในระบบร่วมกันและสามารถแก้ไขปัญหาที่จุดเชื่อมต่อ (Integration) ได้อย่างมีประสิทธิภาพ
 
 ## สรุปการเชื่อมโยงงานของสมาชิก
 
-งานของทั้งสองคนเชื่อมโยงกันผ่าน **RESTful API Contract** โดยสมาชิกคนที่ 1 จัดเตรียม Backend Service ที่มีความปลอดภัยสูง (HTTPS/JWT) และสมาชิกคนที่ 2 นำข้อมูลเหล่านั้นมาแสดงผลผ่าน Frontend โดยมีการประสานงานกันอย่างใกล้ชิดในส่วนของ Authentication และการส่งค่า Token เพื่อให้หน้า Log Dashboard ทำงานได้เฉพาะสิทธิ์ Admin ตามเงื่อนไขของโจทย์
+งานของสมาชิกทั้งสองคนเชื่อมต่อกันผ่าน API Contracts โดยทางฝั่ง Backend (ธนมินทร์) จะเตรียม Endpoint และ JWT Token ให้พร้อมใช้งาน และทางฝั่ง Frontend (รัฐจิกาลณ์) จะนำ URL เหล่านั้นมาใส่ใน config.js เพื่อดึงข้อมูลมาแสดงผลและส่งข้อมูลกลับไปบันทึก การทำงานต้องประสานกันอย่างใกล้ชิดในส่วนของ Request/Response Format และการตั้งค่า CORS เพื่อให้ระบบสามารถสื่อสารกันข้าม Domain บน Cloud ได้อย่างไร้รอยต่อ
