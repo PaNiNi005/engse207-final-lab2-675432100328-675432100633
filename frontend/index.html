@@ -450,7 +450,9 @@
 <script>
 
 const AUTH=window.APP_CONFIG.AUTH_URL,TASK=window.APP_CONFIG.TASK_URL,USER=window.APP_CONFIG.USER_URL;
+
 let currentUser=null,token=localStorage.getItem('jwt_token'),allTasks=[],currentFilter='ALL';
+
 function authHeaders(){return{'Content-Type':'application/json','Authorization':`Bearer ${token}`};}
 
 async function doLogin(){const email=document.getElementById('login-email').value.trim(),password=document.getElementById('login-password').value;try{const res=await fetch(`${AUTH}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})}),data=await res.json();if(res.ok){token=data.token;localStorage.setItem('jwt_token',token);initApp(data.user);}else showAuthMsg(data.error||'Login ล้มเหลว','error');}catch{showAuthMsg('เชื่อมต่อ Server ไม่ได้','error');}}

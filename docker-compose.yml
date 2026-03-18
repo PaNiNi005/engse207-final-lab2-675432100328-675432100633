@@ -1,5 +1,4 @@
 services:
-
   # ── Databases ──────────────────────────────────────────────────────
   auth-db:
     image: postgres:15-alpine
@@ -57,10 +56,10 @@ services:
     build: ./auth-service
     environment:
       DATABASE_URL: postgres://admin:secret123@auth-db:5432/authdb
-      JWT_SECRET:   ${JWT_SECRET:-dev-shared-secret}
-      JWT_EXPIRES:  1h
-      PORT:         3001
-      NODE_ENV:     development
+      JWT_SECRET: ${JWT_SECRET:-dev-shared-secret}
+      JWT_EXPIRES: 1h
+      PORT: 3001
+      NODE_ENV: development
     ports:
       - "3001:3001"
     depends_on:
@@ -71,9 +70,9 @@ services:
     build: ./task-service
     environment:
       DATABASE_URL: postgres://admin:secret123@task-db:5432/taskdb
-      JWT_SECRET:   ${JWT_SECRET:-dev-shared-secret}
-      PORT:         3002
-      NODE_ENV:     development
+      JWT_SECRET: ${JWT_SECRET:-dev-shared-secret}
+      PORT: 3002
+      NODE_ENV: development
     ports:
       - "3002:3002"
     depends_on:
@@ -84,13 +83,23 @@ services:
     build: ./user-service
     environment:
       DATABASE_URL: postgres://admin:secret123@user-db:5432/userdb
-      JWT_SECRET:   ${JWT_SECRET:-dev-shared-secret}
-      PORT:         3003
-      NODE_ENV:     development
+      JWT_SECRET: ${JWT_SECRET:-dev-shared-secret}
+      PORT: 3003
+      NODE_ENV: development
     ports:
       - "3003:3003"
     depends_on:
       user-db: { condition: service_healthy }
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth-service
+      - task-service
+      - user-service
     restart: unless-stopped
 
 volumes:
