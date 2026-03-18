@@ -448,36 +448,65 @@
 <div class="toast-container" id="toast-container"></div>
 <script src="config.js"></script>
 <script>
+
 const AUTH=window.APP_CONFIG.AUTH_URL,TASK=window.APP_CONFIG.TASK_URL,USER=window.APP_CONFIG.USER_URL;
 let currentUser=null,token=localStorage.getItem('jwt_token'),allTasks=[],currentFilter='ALL';
-function authHeaders() {const currentToken = localStorage.getItem('jwt_token'); return {'Content-Type': 'application/json','Authorization': `Bearer ${currentToken}` }; }
-async function doLogin(){const email=document.getElementById('login-email').value.trim(),password=document.getElementById('login-password').value;try{const res=await fetch(`${AUTH}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})}),data=await res.json();if(res.ok){data = await res.json(); token=data.token;localStorage.setItem('jwt_token',token);initApp(data.user);}else showAuthMsg(data.error||'Login ล้มเหลว','error');}catch{showAuthMsg('เชื่อมต่อ Server ไม่ได้','error');}}
+function authHeaders(){return{'Content-Type':'application/json','Authorization':`Bearer ${token}`};}
+
+async function doLogin(){const email=document.getElementById('login-email').value.trim(),password=document.getElementById('login-password').value;try{const res=await fetch(`${AUTH}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})}),data=await res.json();if(res.ok){token=data.token;localStorage.setItem('jwt_token',token);initApp(data.user);}else showAuthMsg(data.error||'Login ล้มเหลว','error');}catch{showAuthMsg('เชื่อมต่อ Server ไม่ได้','error');}}
+
 async function doRegister(){const username=document.getElementById('reg-name').value.trim(),email=document.getElementById('reg-email').value.trim(),password=document.getElementById('reg-password').value;try{const res=await fetch(`${AUTH}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})}),data=await res.json();if(res.ok){token=data.token;localStorage.setItem('jwt_token',token);initApp(data.user);}else showAuthMsg(data.error||'สมัครไม่สำเร็จ','error');}catch{showAuthMsg('เชื่อมต่อ Server ไม่ได้','error');}}
+
 function showAuthMsg(msg,type){const el=document.getElementById('auth-msg');el.className=`auth-msg ${type}`;el.textContent=msg;}
+
 async function loadTasks(){try{const res=await fetch(`${TASK}/api/tasks/`,{headers:authHeaders()}),data=await res.json();if(res.ok){allTasks=data.tasks||[];renderTasks();updateStats();document.getElementById('task-count').textContent=allTasks.length;}}catch(e){console.error(e);}}
+
 async function submitTask(){const id=document.getElementById('modal-task-id').value,body={title:document.getElementById('modal-task-title').value,description:document.getElementById('modal-task-desc').value,status:document.getElementById('modal-task-status').value,priority:document.getElementById('modal-task-priority').value};const method=id?'PUT':'POST',url=id?`${TASK}/api/tasks/${id}`:`${TASK}/api/tasks/`;try{const res=await fetch(url,{method,headers:authHeaders(),body:JSON.stringify(body)});if(res.ok){toast('บันทึกสำเร็จ','success');closeModal();loadTasks();}}catch{toast('บันทึกไม่สำเร็จ','error');}}
+
 async function quickStatusUpdate(id,newStatus){try{await fetch(`${TASK}/api/tasks/${id}`,{method:'PUT',headers:authHeaders(),body:JSON.stringify({status:newStatus})});loadTasks();}catch{toast('Update ไม่สำเร็จ','error');}}
+
 async function deleteTask(id){try{const res=await fetch(`${TASK}/api/tasks/${id}`,{method:'DELETE',headers:authHeaders()});if(res.ok){toast('ลบ Task แล้ว','success');closeConfirm();loadTasks();}}catch{toast('ลบไม่สำเร็จ','error');}}
+
 async function loadUsers(){try{const res=await fetch(`${USER}/api/users/`,{headers:authHeaders()}),data=await res.json();const a=document.getElementById('users-admin-only'),f=document.getElementById('users-forbidden');if(res.status===403){a.classList.add('hidden');f.classList.remove('hidden');return;}if(res.ok){f.classList.add('hidden');a.classList.remove('hidden');document.getElementById('user-rows').innerHTML=data.users.map(u=>`<div class="user-row"><div><strong>${u.name}</strong><div class="user-email">${u.email}</div></div><div>${u.email}</div><div><span class="role-badge role-${u.role}">${u.role}</span></div><div style="font-size:.78rem;color:var(--muted)">${new Date(u.created_at).toLocaleDateString('th-TH')}</div></div>`).join('');}}catch(e){console.error(e);}}
+
 async function loadProfile(){try{const res=await fetch(`${USER}/api/users/me`,{headers:authHeaders()}),data=await res.json();if(res.ok){const u=data.user;document.getElementById('prof-name').textContent=u.name;document.getElementById('prof-email').textContent=u.email;document.getElementById('prof-avatar').textContent=(u.name||'?')[0];renderJwtInspector();}}catch(e){console.error(e);}}
+
 function initApp(user){currentUser=user;document.getElementById('auth-page').classList.add('hidden');document.getElementById('app-page').classList.remove('hidden');document.getElementById('sidebar-name').textContent=user.name||user.email;document.getElementById('sidebar-avatar').textContent=(user.name||'?')[0];document.getElementById('sidebar-role-badge').textContent=user.role;document.getElementById('sidebar-role-badge').className=`role-badge role-${user.role}`;document.getElementById('nav-users').style.display=user.role==='admin'?'flex':'none';showPage('tasks');}
+
 function showPage(page){document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));const a=document.querySelector(`.nav-item[data-page="${page}"]`);if(a)a.classList.add('active');['tasks','users','profile'].forEach(p=>{document.getElementById(`page-${p}`).classList.toggle('hidden',p!==page);});if(page==='tasks')loadTasks();if(page==='users')loadUsers();if(page==='profile')loadProfile();}
+
 function switchTab(tab){document.getElementById('login-form').classList.toggle('hidden',tab!=='login');document.getElementById('register-form').classList.toggle('hidden',tab!=='register');document.querySelectorAll('.auth-tab').forEach(b=>b.classList.toggle('active',(tab==='login'?'เข้าสู่ระบบ':'สมัครสมาชิก')===b.textContent));document.getElementById('auth-msg').textContent='';document.getElementById('auth-msg').className='';}
+
 function renderTasks(){const filtered=currentFilter==='ALL'?allTasks:allTasks.filter(t=>t.status===currentFilter);const list=document.getElementById('task-list');if(filtered.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="margin:0 auto;display:block;"><rect x="8" y="8" width="36" height="36" rx="7" stroke="#ddd6fe" stroke-width="2" stroke-dasharray="5 3"/><path d="M20 26H32M26 20V32" stroke="#ddd6fe" stroke-width="2" stroke-linecap="round"/></svg></div><p style="font-weight:700;color:var(--text2);margin-bottom:.3rem;">ยังไม่มี Task</p><p>กดปุ่ม "สร้าง Task ใหม่" เพื่อเริ่มต้น</p></div>`;return;}
+
 const sc={TODO:'<span class="chip chip-todo">To Do</span>',IN_PROGRESS:'<span class="chip chip-inprogress">กำลังทำ</span>',DONE:'<span class="chip chip-done">เสร็จแล้ว</span>'};
+
 list.innerHTML=filtered.map(t=>`<div class="task-card status-${t.status}"><div class="task-header"><div class="title ${t.status==='DONE'?'done':''}">${t.title}</div><div class="task-actions"><button class="btn-icon edit" onclick="openEditModal(${t.id})"><svg width="12" height="12" viewBox="0 0 11 11" fill="none"><path d="M7.5 2L9.5 4L3.5 9.5H1.5V7.5L7.5 2Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg></button><button class="btn-icon delete" onclick="openConfirm(${t.id})"><svg width="12" height="12" viewBox="0 0 11 11" fill="none"><path d="M2 3H9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><rect x="3" y="3" width="5" height="6.5" rx="1" stroke="currentColor" stroke-width="1.1"/></svg></button></div></div>${t.description?`<div class="task-desc">${t.description}</div>`:''}<div class="task-meta"><span class="chip chip-owner">${t.owner_id||'system'}</span>${sc[t.status]||''}<span class="chip chip-${t.priority}">${t.priority}</span><select class="status-select" onchange="quickStatusUpdate(${t.id},this.value)"><option value="TODO" ${t.status==='TODO'?'selected':''}>To Do</option><option value="IN_PROGRESS" ${t.status==='IN_PROGRESS'?'selected':''}>กำลังทำ</option><option value="DONE" ${t.status==='DONE'?'selected':''}>เสร็จแล้ว</option></select></div></div>`).join('');}
+
 function updateStats(){const c={TODO:0,IN_PROGRESS:0,DONE:0};allTasks.forEach(t=>c[t.status]++);document.getElementById('st-total').textContent=allTasks.length;document.getElementById('st-todo').textContent=c.TODO;document.getElementById('st-inprog').textContent=c.IN_PROGRESS;document.getElementById('st-done').textContent=c.DONE;}
+
 function setFilter(f){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.onclick.toString().includes(`'${f}'`)));renderTasks();}
+
 function openCreateModal(){document.getElementById('modal-title').textContent='สร้าง Task ใหม่';document.getElementById('modal-task-id').value='';document.getElementById('modal-task-title').value='';document.getElementById('modal-task-desc').value='';document.getElementById('modal-task-status').value='TODO';document.getElementById('modal-task-priority').value='low';document.getElementById('task-modal').classList.remove('hidden');}
+
 function openEditModal(id){const t=allTasks.find(x=>x.id===id);if(!t)return;document.getElementById('modal-title').textContent='แก้ไข Task';document.getElementById('modal-task-id').value=t.id;document.getElementById('modal-task-title').value=t.title;document.getElementById('modal-task-desc').value=t.description;document.getElementById('modal-task-status').value=t.status;document.getElementById('modal-task-priority').value=t.priority;document.getElementById('task-modal').classList.remove('hidden');}
+
 function closeModal(){document.getElementById('task-modal').classList.add('hidden');}
+
 function openConfirm(id){document.getElementById('confirm-modal').classList.remove('hidden');document.getElementById('confirm-delete-btn').onclick=()=>deleteTask(id);}
+
 function closeConfirm(){document.getElementById('confirm-modal').classList.add('hidden');}
+
 function toast(msg,type='success'){const icons={success:'✓',error:'✕',info:'i'};const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=`<span style="font-weight:700">${icons[type]||''}</span> ${msg}`;document.getElementById('toast-container').prepend(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(12px)';t.style.transition='all .25s';setTimeout(()=>t.remove(),260);},2800);}
+
 function doLogout(){localStorage.removeItem('jwt_token');location.reload();}
+
 function renderJwtInspector(){if(!token)return;const parts=token.split('.');if(parts.length!==3)return;document.getElementById('jwt-parts').innerHTML=`<div class="jwt-parts"><span class="jwt-part jwt-header-part">${parts[0]}</span>.<span class="jwt-part jwt-payload-part">${parts[1]}</span>.<span class="jwt-part jwt-sig-part">${parts[2]}</span></div>`;try{const p=JSON.parse(atob(parts[1]));document.getElementById('jwt-decoded').innerHTML=`<pre>${JSON.stringify(p,null,2)}</pre>`;const exp=new Date(p.exp*1000),bad=exp<new Date();document.getElementById('token-exp').innerHTML=`<div class="token-exp ${bad?'exp-bad':'exp-ok'}">${bad?'✕ Expired':'✓ Valid until'}: ${exp.toLocaleString('th-TH')}</div>`;}catch{}}
+
 if(token){fetch(`${AUTH}/api/auth/verify`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json()).then(d=>{if(d.valid)initApp(d.user);else doLogout();}).catch(()=>doLogout());}
+
 else{document.getElementById('auth-page').style.display='flex';}
+
 </script>
 </body>
 </html>
