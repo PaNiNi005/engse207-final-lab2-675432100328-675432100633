@@ -31,4 +31,4 @@
 * Frontend Configuration in Microservices: เข้าใจความสำคัญของไฟล์ Config กลาง (เช่น config.js) ในการจัดการ URL ของหลายๆ Service ซึ่งมีความซับซ้อนกว่าการทำ Monolith ใน Set 1
 * User Profile Management: ได้เรียนรู้วิธีการดึงข้อมูลส่วนตัว (Identity) จาก JWT และนำมาแสดงผลรวมถึงการจัดการสถานะ (State) ของ UI ในหน้าโปรไฟล์
 * Cloud Services Overview: ได้สัมผัสประสบการณ์การนำ Code ขึ้นไปรันบน Production Environment จริงอย่าง Railway และเข้าใจความแตกต่างระหว่างการทดสอบบน Local และ Cloud
-* Collaboration & Documentation: เห็นความสำคัญของการทำเอกสารที่ชัดเจน เพราะเมื่อระบบแยกเป็นหลาย Service การสื่อสารผ่านเอกสารจะช่วยลดความสับสนในทีมได้มาก
+* Basic Debugging: ได้ฝึกใช้ Browser Developer Tools (Console) ในการดู Response จาก Server เพื่อหาสาเหตุของปัญหา
