@@ -280,8 +280,18 @@
 <script src="config.js"></script>
 <script>
 const USER_API = window.APP_CONFIG.USER_URL;
-const token    = localStorage.getItem('jwt_token');
-if (!token) window.location.href = 'index.html';
+
+// ✅ ฟังก์ชันดึง Token และสร้าง Header (ต้องใช้แบบนี้เพื่อความชัวร์)
+function authHeaders() {
+  const currentToken = localStorage.getItem('jwt_token');
+  return {
+    'Authorization': `Bearer ${currentToken}`,
+    'Content-Type': 'application/json'
+  };
+}
+
+// เช็คว่ามี Token ไหม ถ้าไม่มีให้กลับไปหน้าแรก
+if (!localStorage.getItem('jwt_token')) window.location.href = 'index.html';
 
 function updateCounter(el, id, max) {
   const rem = max - el.value.length;
@@ -294,34 +304,37 @@ function updateCounter(el, id, max) {
 async function loadProfile() {
   try {
     const res = await fetch(`${USER_API}/api/users/me`, { 
-      headers: { 'Authorization': `Bearer ${token}` } 
+      headers: authHeaders() // ✅ ใช้ฟังก์ชันที่เราสร้างไว้
     });
 
     if (res.status === 401) {
        alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
-       window.location.href = 'login.html'; 
+       localStorage.removeItem('jwt_token'); // ล้าง token ที่หมดอายุออก
+       window.location.href = 'index.html'; 
        return;
     }
 
-    // --- เริ่มวางโค้ดใหม่ตรงนี้ ---
     const data = await res.json();
-    console.log("Profile Data:", data); 
-
+    // ตรวจสอบโครงสร้างข้อมูลที่ Backend ส่งมา (บางที่ส่ง user มาตรงๆ บางที่ห่อ data มา)
     const userData = data.user || data; 
     
     if (res.ok && userData) {
+      // ดึงค่า display_name และ bio จาก profile object (ถ้ามี)
       const p = userData.profile || {};
       
       const dispInput = document.getElementById('display_name');
       const bioInput = document.getElementById('bio');
+      
       if(dispInput) dispInput.value = p.display_name || '';
       if(bioInput) bioInput.value = p.bio || '';
       
-      const name = p.display_name || userData.username || 'User';
-      const initial = name.charAt(0).toUpperCase();
+      // เลือกชื่อที่จะแสดง: display_name > username > 'User'
+      const nameToShow = p.display_name || userData.username || 'User';
+      const initial = nameToShow.charAt(0).toUpperCase();
       
-      document.getElementById('header-name').textContent = name;
-      document.getElementById('sidebar-name').textContent = name;
+      // อัปเดต UI ทั่วทั้งหน้า
+      document.getElementById('header-name').textContent = nameToShow;
+      document.getElementById('sidebar-name').textContent = nameToShow;
       
       const avatarContainer = document.getElementById('avatar-initial');
       if (avatarContainer) {
@@ -331,11 +344,10 @@ async function loadProfile() {
       const sideInitial = document.getElementById('sidebar-initial');
       if (sideInitial) sideInitial.textContent = initial;
     }
-    // --- สิ้นสุดการวางโค้ดใหม่ ---
 
   } catch(err) { 
     console.error("Load Profile Error:", err);
-    document.getElementById('header-name').textContent = "เกิดข้อผิดพลาดในการโหลด";
+    document.getElementById('header-name').textContent = "เชื่อมต่อ Server ไม่ได้";
   }
 }
 loadProfile();
@@ -352,10 +364,7 @@ async function updateProfile() {
 
     const res = await fetch(`${USER_API}/api/users/me`, {
       method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
+      headers: authHeaders(),
       body: JSON.stringify({ display_name, bio })
     });
 
